@@ -1,0 +1,474 @@
+.main {
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  width: 100%;
+  height: 72px;
+  padding: 24px;
+  font-weight: 600;
+  font-size: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.box {
+  width: 100%;
+  background: #e4e4e4;
+  margin-left: 236px;
+  position: relative;
+}
+.inner_box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 16px;
+  height: 72px;
+  border-bottom: 1px solid #e0e0e0;
+  font-weight: 600;
+  font-size: 20px;
+  background: #ffffff;
+}
+.content {
+  padding: 24px;
+  background: #e4e4e4;
+}
+.content_one {
+  background: #ffffff;
+  margin-right: 24px;
+  width: 90%;
+  height: 375px;
+  padding: 30px 24px;
+  font-weight: 600px;
+  font-size: 16px;
+}
+.content_two {
+  background: #ffffff;
+  width: 60%;
+  height: 375px;
+  padding: 30px 24px;
+  font-weight: 600px;
+  font-size: 16px;
+}
+.attend_inn {
+  background: #ffffff;
+  position: relative;
+}
+.attend_inn input {
+  background: #f4f4f4;
+  width: 40%;
+  border: none;
+  margin: 24px;
+  font-weight: 400;
+  padding: 12px 12px 12px 36px;
+  font-size: 13px;
+  border-radius: 1px;
+}
+.dash_logo {
+  color: #ffffff;
+}
+.slogo {
+  position: absolute;
+  color: #646464;
+  top: 41%;
+  left: 3%;
+  z-index: 456;
+}
+
+/* login form css starts here */
+.login_left {
+  height: 100vh;
+  width: 50%;
+  background-image: url(../assets/images/img_1.png);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+.login_right {
+  height: 100vh;
+  background: #ffffff;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.login_label {
+  color: #646464;
+  font-size: 16px;
+  margin: 11px 0;
+}
+
+.input_details {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+}
+
+.login_form input {
+  height: 50px;
+  width: 100%;
+  outline: none;
+  border-radius: 5px;
+  border-color: #e8e8e8;
+  border-style: solid;
+  padding-left: 20px;
+}
+
+.login_form input[type="text"] {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.login_btn {
+  height: 50px;
+  width: 347px;
+  text-align: center;
+  background: linear-gradient(to right, #ffdb6c, #f7b314);
+  border-radius: 5px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  margin-top: 31px;
+}
+
+.login_form h2 {
+  margin-top: 64px;
+  margin-bottom: 39px;
+  color: #1a202c;
+  font-weight: 700;
+  size: 25px;
+  line-height: 42px;
+  line-height: 116%;
+}
+.login_form .login_logo {
+  width: 146px;
+  height: 90px;
+}
+/* login form css ends here  */
+
+/* side_bar css starts here  */
+.side_bar {
+  height: 100vh;
+  width: 236px;
+  background: #000;
+  position: fixed;
+  /* display: flex; */
+  align-items: start;
+  flex-direction: column;
+}
+.side_logo {
+  margin: 30px 41px 84px 24px;
+  cursor: pointer;
+}
+.side_bar ul {
+  padding: 10px;
+}
+.side_bar ul li {
+  list-style: none;
+}
+.side_bar ul li a {
+  padding: 20px 10px;
+  border-radius: 2px;
+  margin-bottom: 20px;
+  display: block;
+}
+.side_bar ul li a svg {
+  margin-right: 10px;
+  margin-top: -2px;
+}
+.side_bar ul li a svg path {
+  fill: #fff;
+}
+.side_bar ul li a.active svg path {
+  fill: #f7b314;
+}
+.side_bar ul li a:hover svg path {
+  fill: #f7b314;
+}
+
+.side_bar ul li a:hover,
+.side_bar ul li a.active {
+  background: rgba(255, 255, 255, 0.16);
+}
+.side_bar ul li a {
+  text-decoration: none;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.logout_logo {
+  cursor: pointer;
+}
+
+/* side_bar css ends here  */
+
+/* table css starts here  */
+.table_container {
+  border: 1px solid #e0e0e0;
+  background: #ffffff;
+  margin-top: 20px;
+}
+.btn_logout {
+  display: flex;
+  height: 42px;
+  width: 102px;
+  font-size: 13px;
+  color: #ec5050;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0px 11px 18px -4px rgba(0, 0, 0, 0.16);
+  border-radius: 2px;
+  justify-content: space-evenly;
+  align-items: center;
+  position: absolute;
+  top: 120%;
+  background: #ffffff;
+  z-index: 2;
+  right: 0;
+  cursor: pointer;
+}
+.showit {
+  visibility: visible;
+}
+.hideit {
+  display: none;
+}
+#exTab1 .tab-content {
+  color: white;
+  background-color: #428bca;
+  padding: 5px 15px;
+}
+
+#exTab2 h3 {
+  color: white;
+  background-color: #428bca;
+  padding: 5px 15px;
+}
+
+/* remove border radius for the tab */
+
+#exTab1 .nav-pills > li > a {
+  border-radius: 0;
+}
+
+/* change border radius for the tab , apply corners on top*/
+
+.tab_container {
+  margin: 24px;
+  padding: 24px;
+  background: #ffffff;
+}
+/* .nav-tabs {
+  background: #cbb4b4;
+  border: none;
+  border-radius: 0%;
+} */
+#tab-section .nav-link {
+  border: 0 !important;
+  border-radius: 0 !important;
+  margin-right: 10px;
+}
+#tab-section .nav-tabs .nav-link:hover {
+  border: none;
+  color: #000;
+  background: #f7b314;
+  border-radius: 0%;
+}
+
+.nav-tabs .nav-link.active {
+  border: none;
+  color: #000;
+  background: #f7b314;
+  border-radius: 0%;
+}
+.nav-item a {
+  font-weight: 500;
+}
+.nav-link:hover,
+.nav-link:focus {
+  color: #646464;
+  background: #f4f4f4;
+  border: none;
+}
+.nav-link {
+  color: #646464;
+  background: #f4f4f4;
+  font-size: 14px;
+  font-weight: 400;
+}
+.nav {
+  border: none;
+  color: #646464;
+}
+.tab_content p {
+  font-size: 16px;
+  font-weight: 600;
+}
+.tab_input {
+  margin-right: 10px;
+}
+.table_container {
+  border: 1px solid #e0e0e0;
+}
+.emp_input {
+  background: #ffffff;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+}
+.emp_input input {
+  background: #f4f4f4;
+  width: 70%;
+  border: none;
+  font-weight: 400;
+  padding: 12px 12px 12px 36px;
+  font-size: 13px;
+  border-radius: 1px;
+}
+.emp_slogo {
+  position: absolute;
+  z-index: 5;
+  top: 35%;
+  left: 1%;
+}
+.tablebordered {
+  margin-top: 16px;
+  border: 1px solid #e0e0e0;
+}
+table thead tr {
+  background: #e0e0e0;
+  font-size: 13px;
+  font-weight: 500;
+}
+table thead tr th {
+  border-bottom: none;
+}
+table tbody tr td {
+  color: #646464;
+  font-size: 13px;
+  font-weight: 400;
+}
+table tbody :hover {
+  cursor: pointer;
+  background: #f4f4f4;
+}
+.emp_input input:focus {
+  outline: none;
+}
+.download_btn {
+  background: #ffecbe;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px;
+}
+.add_emp_btn {
+  background: linear-gradient(90.11deg, #ffdb6c -9.01%, #f7b314 127.45%);
+  border-radius: 1px;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+}
+/* employee modal  */
+.modal-title {
+  font-family: 600 !important;
+  font-size: 18px;
+}
+.model-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.model-body .section {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.model-body .section div {
+  margin: 10px 0;
+  width: 45%;
+}
+
+.model-body .section div {
+  margin: 10px 0;
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-footer {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-footer p {
+  width: 100%;
+  text-align: start;
+}
+
+.modal-footer .dropdown {
+  width: 100%;
+}
+
+.modal-footer .dropdown span {
+  text-align: start;
+}
+
+.modal-footer button {
+  width: 100%;
+  background-color: #f7b314;
+  border: none;
+  color: #000;
+  font-size: 13px;
+  font-family: 400;
+}
+.pop_con {
+  padding: 25px 25px 0px 25px;
+  background: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  width: 433px;
+}
+.pop_content {
+  background: #ffffff;
+  display: flex;
+  width: 433px;
+
+  padding: 21px 21px 0px 21px;
+
+  justify-content: space-between;
+}
+.pop_left,
+.pop_right {
+  width: 433px;
+  padding: 25px;
+  background: #f4f4f4;
+}
+.foo {
+  width: 433px;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 25px;
+  background: #ffffff;
+  align-items: center;
+}
+.del_btn {
+  background: #ffe8e8;
+  color: #ec5050;
+  border: none;
+  width: 188px;
+  height: 40px;
+}
+.edit_btn {
+  background: #f7b314;
+  color: #000000;
+  border: none;
+  width: 188px;
+  height: 40px;
+}
