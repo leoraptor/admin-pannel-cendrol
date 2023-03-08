@@ -3,11 +3,9 @@ import Sidebar_header from "../../re_use/Sidebar_header";
 import Sidebar from "../../re_use/side_bar/Sidebar";
 import "../people.css";
 import { Nav, Tab } from "react-bootstrap";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
 import axios from "axios";
-import Loading from "../../re_use/Loading";
-
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from "react-toastify";
 const Manageusers = () => {
   const [name, setName] = useState("");
   const [empId, setEmpId] = useState("");
@@ -24,11 +22,32 @@ const Manageusers = () => {
   //all employee data
   const [empDetails, setEmpDetails] = useState([]);
   const [totalEmp, setTotalEmp] = useState();
-  // console.log(department);
   //tab section
   const [activeTab, setActiveTab] = useState("tab1");
   // individual emp id from table row state
   const [individualEmp, setIndividualEmp] = useState();
+
+  //edit existing emp details
+  const [tabelF, setTableF] = useState();
+  const [newName, setNewName] = useState(individualEmp?.name);
+  console.log(newName);
+  const [newEmpId, setNewEmpId] = useState(individualEmp?.email);
+  const [newUserId, setNewUserId] = useState(individualEmp?.emp_id);
+  const [newPass, setNewPass] = useState(individualEmp?.password);
+  const [newMob, setNewMob] = useState(individualEmp?.mobile);
+  const [newTeam, setNewTeam] = useState(individualEmp?.department);
+  const [newDesignation, setNewDesignation] = useState(
+    individualEmp?.designation
+  );
+
+  // tab section 2 aka designation start
+  const [tableDesignation, setTableDesignation] = useState();
+  const [tableDesigType, setTableDesigType] = useState();
+  const [currentDesignation, setCurrentDesignation] = useState();
+
+  // update designation api
+
+  // tab section 2 aka designation end
   const fetchAllDepartment = async () => {
     let res = await fetch(
       "https://localserver.cendrol.com/cendrolpeopledev/api/get-all-department",
@@ -43,6 +62,7 @@ const Manageusers = () => {
     );
     const data = await res.json();
     setDepartment(data.result);
+    // console.log(department);
     // console.log(data);
   };
 
@@ -82,8 +102,27 @@ const Manageusers = () => {
     setEmpDetails(data.result.listOfEmployee);
     setTotalEmp(data.result.totalEmployee);
   };
+
+  // const getattend = async () => {
+  //   const response = await axios.get(
+  //     `https://localserver.cendrol.com/cendrolpeopledev/api/employee-checkin`,
+
+  //     {
+  //       headers: {
+  //         Authorization: "Bearer " + localStorage.getItem("token"),
+  //         "Content-Type": "application/json;charset=utf-8",
+  //         authtoken: "Y3VzdG9tdG9rZW50b3Byb3RlY3RhcGlyb3V0ZXM=",
+  //         usertype: "admin",
+  //       },
+  //     }
+  //   );
+  //   let result = response.data;
+  //   console.log(result);
+  // };
+
   const getIndEmp = async (i) => {
     let emp_id = i;
+    setTableF(emp_id);
     console.log(emp_id);
     const response = await axios.get(
       `https://localserver.cendrol.com/cendrolpeopledev/api/get-employee?employee_id=${emp_id}`,
@@ -97,22 +136,17 @@ const Manageusers = () => {
         },
       }
     );
-    // let result = JSON.stringify(response);
     setIndividualEmp(response.data.result);
     console.log(individualEmp);
-    console.log(individualEmp.name);
-    // console.log(individualEmp.data.result.name);
+    console.log(response);
   };
   useEffect(() => {
     fetchAllDepartment();
+    fetchAllDesignation();
+    getAllEmployee();
+    // getattend();
   }, []);
 
-  useEffect(() => {
-    fetchAllDesignation();
-  }, []);
-  useEffect(() => {
-    getAllEmployee();
-  }, []);
   const addingEmployee = async () => {
     let employee = {
       name: name,
@@ -142,7 +176,6 @@ const Manageusers = () => {
           authtoken: "Y3VzdG9tdG9rZW50b3Byb3RlY3RhcGlyb3V0ZXM=",
           usertype: "admin",
         },
-        // body: JSON.stringify(employee),
       }
     );
     let result = await response.json();
@@ -152,9 +185,91 @@ const Manageusers = () => {
   const addEmployee = function (e) {
     e.preventDefault();
     addingEmployee();
+    if (addingEmployee()) {
+      toast.success("Employee Added successfully");
+    } else {
+      toast.error("Failed");
+    }
     console.log("emp added successfull");
   };
+  const saveNewEmp = async (e) => {
+    e.preventDefault();
+    const response = await axios.put(
+      `https://localserver.cendrol.com/cendrolpeopledev/api/update-employee?employee_id=${tabelF}`,
+      {
+        name: newName,
+        emp_id: newUserId,
+        email: newEmpId,
+        mobile: newMob,
+        password: newPass,
+        department: newTeam,
+        designation: newDesignation,
+      },
+      {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+          "Content-Type": "application/json;charset=utf-8",
+          authtoken: "Y3VzdG9tdG9rZW50b3Byb3RlY3RhcGlyb3V0ZXM=",
+          usertype: "admin",
+        },
+      }
+    );
+    // setNewName("");
+    // setNewUserId("");
+    // setNewEmpId("");
+    // setNewMob("");
+    // setNewPass("");
+    // setNewTeam("");
+    // setNewDesignation("");
+    let result = response.data;
+    console.log(result);
+    if (result) {
+      toast.success("Employee Details Updated");
+    } else {
+      toast.error("Update Failed");
+    }
+  };
 
+  const deleteemp = async () => {
+    const response = await axios.delete(
+      `https://localserver.cendrol.com/cendrolpeopledev/api/delete-employee?employee_id=${tabelF}`,
+      {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+          "Content-Type": "application/json;charset=utf-8",
+          authtoken: "Y3VzdG9tdG9rZW50b3Byb3RlY3RhcGlyb3V0ZXM=",
+          usertype: "admin",
+        },
+      }
+    );
+    let result = response.data;
+    if (result) {
+      toast.success("Employee Deleted");
+    }
+    console.log(result);
+  };
+  const updateDesignation = async () => {
+    const response = await axios.put(
+      `https://localserver.cendrol.com/cendrolpeopledev/api/update-designation?designation_id=${tableDesignation}`,
+      { _id: tableDesignation },
+      {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+          "Content-Type": "application/json;charset=utf-8",
+          authtoken: "Y3VzdG9tdG9rZW50b3Byb3RlY3RhcGlyb3V0ZXM=",
+          usertype: "admin",
+        },
+      }
+    );
+    let result = response.data;
+    console.log(result);
+    if (result) {
+      toast.success("Designation Updated!!");
+      setTableDesigType("");
+    } else {
+      toast.error("Update Failed!");
+    }
+  };
   return (
     <div className="d-flex ">
       <Sidebar />
@@ -166,6 +281,7 @@ const Manageusers = () => {
         </div>
         <div className="tab_container" id="tab-section">
           <Tab.Container activeKey={activeTab} onSelect={setActiveTab}>
+            <ToastContainer />
             <Nav variant="tabs">
               <Nav.Item>
                 <Nav.Link eventKey="tab1">Employees</Nav.Link>
@@ -209,7 +325,7 @@ const Manageusers = () => {
                       />
                     </svg>
                     <input
-                      className="emp_input"
+                      className="emp_input_box"
                       placeholder="Search by name, Designation, employee ID"
                     />
 
@@ -251,8 +367,9 @@ const Manageusers = () => {
                       </svg>
                       Add Employee
                     </button>
+                    {/* add emp pop up  */}
                     <div
-                      className="modal  "
+                      className="modal fade addemp_pop_up"
                       id="addemp_pop_up"
                       data-bs-backdrop="static"
                       data-bs-keyboard="false"
@@ -263,107 +380,121 @@ const Manageusers = () => {
                       <div className="modal-dialog modal-dialog-centered">
                         <div className="modal-content">
                           <div className="modal-header">
-                            <h1
-                              className="modal-title fs-5"
-                              id="exampleModalLabel"
-                            >
-                              Add Employee
-                            </h1>
+                            <h1>Add Employee</h1>
                             <button
                               type="button"
-                              className="btn-close"
+                              className="border-0 bg_none"
                               data-bs-dismiss="modal"
                               aria-label="Close"
-                            ></button>
+                            >
+                              <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 18 18"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M2.46659 17.1666L0.833252 15.5333L7.36659 8.99992L0.833252 2.46659L2.46659 0.833252L8.99992 7.36659L15.5333 0.833252L17.1666 2.46659L10.6333 8.99992L17.1666 15.5333L15.5333 17.1666L8.99992 10.6333L2.46659 17.1666Z"
+                                  fill="black"
+                                />
+                              </svg>
+                            </button>
                           </div>
-                          <div className="model-body">
-                            <div className="section">
-                              <div>
-                                <label>Employee Name</label>
-                                <input
-                                  type="text"
-                                  onChange={(e) => setName(e.target.value)}
-                                />
-                              </div>
-                              <div>
-                                <label>Employee ID</label>
-                                <input
-                                  type="text"
-                                  name="emp_id"
-                                  onChange={(e) => setEmpId(e.target.value)}
-                                />
-                              </div>
-                            </div>
+                          <div className="modal-body">
+                            <div className="container">
+                              <div className="row">
+                                <div className="col left_side">
+                                  <label className="p_light_d">
+                                    Employee Name
+                                  </label>
+                                  <input
+                                    className="add_emp_input"
+                                    type="text"
+                                    placeholder="Sample User"
+                                    onChange={(e) => setName(e.target.value)}
+                                  />
 
-                            <div className="section">
-                              <div>
-                                <label>User ID</label>
-                                <input
-                                  type="text"
-                                  onChange={(e) => setEmail(e.target.value)}
-                                />
-                              </div>
-                              <div>
-                                <label>Password</label>
-                                <input
-                                  type="text"
-                                  onChange={(e) => setPassword(e.target.value)}
-                                />
-                              </div>
-                            </div>
+                                  <label className="p_light_d">User ID</label>
+                                  <input
+                                    className="add_emp_input"
+                                    type="text"
+                                    placeholder="eg. user@cendrol.com"
+                                    onChange={(e) => setEmail(e.target.value)}
+                                  />
 
-                            <div className="section">
-                              <div>
-                                <label>Mobile Number</label>
-                                <input
-                                  type="text"
-                                  onChange={(e) => setMobile(e.target.value)}
-                                />
-                              </div>
-                              <div>
-                                <label>Team</label>
-                                <select
-                                  className="form-control"
-                                  id="sel1"
-                                  onChange={(e) => setDept(e.target.value)}
-                                >
-                                  {department?.map((data) => {
-                                    return (
-                                      <option value={data._id}>
-                                        {data.department}
-                                      </option>
-                                    );
-                                  })}
-                                </select>
+                                  <label className="p_light_d">
+                                    Mobile Number
+                                  </label>
+                                  <div className="d-flex">
+                                    <div className="numer_91">+91</div>
+                                    <input
+                                      type="number"
+                                      className="input_feild_number"
+                                      placeholder="eg.8256XXXX64"
+                                      onChange={(e) =>
+                                        setMobile(e.target.value)
+                                      }
+                                    />
+                                  </div>
+                                </div>
+                                <div className="col">
+                                  <label className="p_light_d">
+                                    Employee ID
+                                  </label>
+                                  <input
+                                    className="add_emp_input"
+                                    type="text"
+                                    placeholder="CEN070"
+                                    onChange={(e) => setEmpId(e.target.value)}
+                                  />
+                                  <label className="p_light_d">Password</label>
+                                  <input
+                                    className="add_emp_input"
+                                    type="password"
+                                    placeholder="Password"
+                                    onChange={(e) =>
+                                      setPassword(e.target.value)
+                                    }
+                                  />
+                                  <label className="p_light_d">Team</label>
+                                  <select
+                                    id="sel1"
+                                    onChange={(e) => setDept(e.target.value)}
+                                  >
+                                    <option>Choose team</option>
+                                    {department?.map((data) => {
+                                      return (
+                                        <option value={data._id}>
+                                          {data.department}
+                                        </option>
+                                      );
+                                    })}
+                                  </select>
+                                </div>
                               </div>
                             </div>
-                            <div></div>
-                            <div></div>
                           </div>
                           <div className="modal-footer">
-                            <p>Designation</p>
-
-                            <div className="form-group">
-                              <select
-                                className="form-control"
-                                id="sel2"
-                                onChange={(e) => setRole(e.target.value)}
-                              >
-                                {designation?.map((data) => {
-                                  return (
-                                    <option value={data._id}>
-                                      {data.designation}
-                                    </option>
-                                  );
-                                })}
-                              </select>
-                            </div>
-
+                            <p className="p_light2">Designation</p>
+                            <select
+                              className="choose_designation need_width"
+                              onChange={(e) => setRole(e.target.value)}
+                            >
+                              <option>Choose team</option>;
+                              {designation?.map((data) => {
+                                return (
+                                  <option value={data._id}>
+                                    {data.designation}
+                                  </option>
+                                );
+                              })}
+                            </select>
                             <button
-                              type="button"
-                              className="btn btn-warning"
-                              data-bs-dismiss="modal"
                               onClick={addEmployee}
+                              data-bs-dismiss="modal"
+                              type="button"
+                              className="editemp_save_btn mt-3"
                             >
                               Save Details
                             </button>
@@ -371,6 +502,8 @@ const Manageusers = () => {
                         </div>
                       </div>
                     </div>
+
+                    {/* add emp pop up  */}
                   </div>
                   <table className="table tablebordered">
                     <thead>
@@ -387,7 +520,7 @@ const Manageusers = () => {
                         return (
                           <tr
                             data-bs-toggle="modal"
-                            data-bs-target="#hello"
+                            data-bs-target="#display_emp_details"
                             onClick={() => getIndEmp(each_emp._id)}
                           >
                             <td>{index + 1}</td>
@@ -412,9 +545,10 @@ const Manageusers = () => {
                       })}
                     </tbody>
                   </table>
+                  {/* emp display details in ui pop up  */}
                   <div
-                    className="modal fade"
-                    id="hello"
+                    className="modal fade display_emp"
+                    id="display_emp_details"
                     tabindex="-1"
                     aria-labelledby="exampleModalLabel"
                     aria-hidden="true"
@@ -422,37 +556,333 @@ const Manageusers = () => {
                     <div className="modal-dialog modal-dialog-centered">
                       <div className="modal-content">
                         <div className="modal-header">
-                          <h1
-                            className="modal-title fs-5"
-                            id="exampleModalLabel"
-                          >
-                            Employee Details
-                          </h1>
+                          <h1>Employee Details</h1>
+
                           <button
                             type="button"
-                            className="btn-close"
+                            className="border-0 bg_none"
                             data-bs-dismiss="modal"
                             aria-label="Close"
-                          ></button>
+                          >
+                            <svg
+                              width="18"
+                              height="18"
+                              viewBox="0 0 18 18"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M2.46659 17.1666L0.833252 15.5333L7.36659 8.99992L0.833252 2.46659L2.46659 0.833252L8.99992 7.36659L15.5333 0.833252L17.1666 2.46659L10.6333 8.99992L17.1666 15.5333L15.5333 17.1666L8.99992 10.6333L2.46659 17.1666Z"
+                                fill="black"
+                              />
+                            </svg>
+                          </button>
                         </div>
                         <div className="modal-body">
-                          {/* <p>{data.name}</p> */}
+                          <div className="container">
+                            <div className="row">
+                              <div className="col left_side">
+                                <div>
+                                  <p className="p_light_d">Employee Name</p>
+                                  <p className="p_light_c">
+                                    {individualEmp?.name}
+                                  </p>
+                                  <p className="p_light_d">User ID</p>
+                                  <p className="p_light_c">
+                                    {individualEmp?.email}
+                                  </p>
+                                  <p className="p_light_d">Mobile Number</p>
+                                  <p className="p_light_c">
+                                    {individualEmp?.mobile}
+                                  </p>
+                                  <p className="p_light_d">Designation</p>
+                                  <p className="p_light_c">
+                                    {individualEmp?.designation}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="col right_side">
+                                <div>
+                                  <p className="p_light_d">Employee ID</p>
+                                  <p className="p_light_c">
+                                    {individualEmp?.emp_id}
+                                  </p>
+                                  <p className="p_light_d">Password</p>
+                                  <p className="p_light_c">
+                                    {individualEmp?.password}
+                                  </p>
+
+                                  <p className="p_light_d">Team</p>
+                                  <p className="p_light_c">
+                                    {individualEmp?.department}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                         <div className="modal-footer">
                           <button
+                            className="del_btn "
                             type="button"
-                            className="btn btn-secondary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#delemp"
                             data-bs-dismiss="modal"
                           >
-                            Close
+                            <svg
+                              style={{ marginRight: 10 }}
+                              className="mr-1"
+                              width="12"
+                              height="14"
+                              viewBox="0 0 12 14"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                fill-rule="evenodd"
+                                clip-rule="evenodd"
+                                d="M11.5247 2.49523C11.7841 2.49523 12 2.71056 12 2.98456V3.23789C12 3.50522 11.7841 3.72722 11.5247 3.72722H0.475902C0.215907 3.72722 0 3.50522 0 3.23789V2.98456C0 2.71056 0.215907 2.49523 0.475902 2.49523H2.41971C2.81457 2.49523 3.1582 2.21457 3.24703 1.81857L3.34882 1.36391C3.50702 0.744581 4.02766 0.333252 4.62351 0.333252H7.37649C7.96585 0.333252 8.49233 0.744581 8.64469 1.33124L8.75362 1.8179C8.8418 2.21457 9.18543 2.49523 9.58094 2.49523H11.5247ZM10.5372 11.7559C10.7402 9.86462 11.0955 5.37133 11.0955 5.326C11.1084 5.18867 11.0637 5.05867 10.9749 4.95401C10.8796 4.85601 10.759 4.79801 10.626 4.79801H1.37901C1.24545 4.79801 1.11837 4.85601 1.03019 4.95401C0.940717 5.05867 0.896628 5.18867 0.903112 5.326C0.904303 5.33433 0.917053 5.49261 0.938368 5.75722C1.03306 6.93272 1.29678 10.2067 1.46719 11.7559C1.58779 12.8973 2.33665 13.6146 3.42137 13.6406C4.25842 13.6599 5.12075 13.6666 6.00253 13.6666C6.83309 13.6666 7.67662 13.6599 8.53959 13.6406C9.66192 13.6213 10.4101 12.9166 10.5372 11.7559Z"
+                                fill="#EC5050"
+                              />
+                            </svg>
+                            Delete
                           </button>
-                          <button type="button" className="btn btn-primary">
-                            Save changes
+                          <button
+                            className="edit_btn"
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editemp"
+                            data-bs-dismiss="modal"
+                          >
+                            <svg
+                              style={{ marginRight: 10 }}
+                              width="12"
+                              height="12"
+                              viewBox="0 0 12 12"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                fill-rule="evenodd"
+                                clip-rule="evenodd"
+                                d="M4.25093 11.3519L10.1085 3.77696C10.4269 3.36847 10.5401 2.8962 10.4339 2.41533C10.342 1.97817 10.0731 1.56251 9.66991 1.24719L8.68657 0.466042C7.83057 -0.214774 6.76941 -0.143109 6.16102 0.638038L5.5031 1.49157C5.41821 1.59835 5.43943 1.75601 5.54554 1.84201C5.54554 1.84201 7.20802 3.17497 7.2434 3.20364C7.35659 3.31114 7.44148 3.45447 7.4627 3.62646C7.49807 3.96329 7.26462 4.27861 6.91797 4.32161C6.75526 4.34311 6.59963 4.29295 6.48644 4.19978L4.73906 2.80948C4.65417 2.7457 4.52683 2.75932 4.45609 2.84532L0.303426 8.22018C0.034599 8.55701 -0.057368 8.99416 0.034599 9.41698L0.565178 11.7174C0.593475 11.8393 0.699591 11.9253 0.82693 11.9253L3.16148 11.8966C3.58594 11.8894 3.98211 11.6959 4.25093 11.3519ZM7.51979 10.6355H11.3265C11.6979 10.6355 12 10.9415 12 11.3178C12 11.6947 11.6979 12 11.3265 12H7.51979C7.14839 12 6.84631 11.6947 6.84631 11.3178C6.84631 10.9415 7.14839 10.6355 7.51979 10.6355Z"
+                                fill="#0A0A0A"
+                              />
+                            </svg>
+                            Edit Details
                           </button>
                         </div>
                       </div>
                     </div>
                   </div>
+                  {/* emp display details in ui pop up  ends here*/}
+                  {/* editemp  pop up  start*/}
+                  <div
+                    className="modal fade change_emp"
+                    id="editemp"
+                    data-bs-backdrop="static"
+                    data-bs-keyboard="false"
+                    tabindex="-1"
+                    aria-labelledby="staticBackdropLabel"
+                    aria-hidden="true"
+                  >
+                    <div className="modal-dialog modal-dialog-centered">
+                      <div className="modal-content">
+                        <div className="modal-header">
+                          <h2>Edit Details</h2>
+                          <button
+                            type="button"
+                            className="border-0 bg_none"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                          >
+                            <svg
+                              width="18"
+                              height="18"
+                              viewBox="0 0 18 18"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M2.46659 17.1666L0.833252 15.5333L7.36659 8.99992L0.833252 2.46659L2.46659 0.833252L8.99992 7.36659L15.5333 0.833252L17.1666 2.46659L10.6333 8.99992L17.1666 15.5333L15.5333 17.1666L8.99992 10.6333L2.46659 17.1666Z"
+                                fill="black"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                        <div className="modal-body">
+                          <div className="edit_inputs">
+                            <div className="edit_inputs_left">
+                              <label htmlFor="Full_name" className="p_light">
+                                Employee Name
+                              </label>
+                              <input
+                                className="input_feild"
+                                value={individualEmp?.name}
+                                type="text"
+                                id="full_name"
+                                placeholder="Enter Full Name"
+                                onChange={(e) => setNewName(e.target.innerText)}
+                              />
+                              <label className="p_light">User ID</label>
+                              <input
+                                className="input_feild"
+                                value={individualEmp?.emp_id}
+                                type="email"
+                                placeholder="eg. user@cendrol.com"
+                                onChange={(e) => setNewUserId(e.target.value)}
+                              />
+                              <label className="p_light">Mobile Number</label>
+                              <div className="d-flex">
+                                <div className="numer_91">+91</div>
+                                <input
+                                  className="input_feild_number"
+                                  type="number"
+                                  placeholder="eg.8256XXXX64"
+                                  onChange={(e) => setNewMob(e.target.value)}
+                                />
+                              </div>
+                            </div>
+                            <div className="edit_inputs_right">
+                              {" "}
+                              <label htmlFor="Full_name" className="p_light">
+                                Employee ID
+                              </label>
+                              <input
+                                className="input_feild"
+                                type="text"
+                                id="full_name"
+                                placeholder="CEN070"
+                                onChange={(e) => setNewEmpId(e.target.value)}
+                              />
+                              <label className="p_light">Password</label>
+                              <input
+                                className="input_feild"
+                                type="password"
+                                placeholder="eg. XXXXXX"
+                                onChange={(e) => setNewPass(e.target.value)}
+                              />
+                              <label className="p_light">Team</label>
+                              <select
+                                id="sel1"
+                                onChange={(e) => setNewTeam(e.target.value)}
+                              >
+                                <option>Choose team</option>;
+                                {department?.map((data) => {
+                                  return (
+                                    <option value={data._id}>
+                                      {data.department}
+                                    </option>
+                                  );
+                                })}
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="modal-footer">
+                          <p className="p_light2">Designation</p>
+                          <select
+                            className="choose_designation"
+                            onChange={(e) => setNewDesignation(e.target.value)}
+                          >
+                            <option>Choose team</option>;
+                            {designation?.map((data) => {
+                              return (
+                                <option value={data._id}>
+                                  {data.designation}
+                                </option>
+                              );
+                            })}
+                          </select>
+                          <button
+                            onClick={saveNewEmp}
+                            data-bs-dismiss="modal"
+                            type="button"
+                            className="editemp_save_btn mt-3"
+                          >
+                            Save Details
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* edit emp pop up end  */}
+                  {/* delete emp detail pop up  */}
+                  <div
+                    className="modal fade change_emp"
+                    id="delemp"
+                    data-bs-backdrop="static"
+                    data-bs-keyboard="false"
+                    tabindex="-1"
+                    aria-labelledby="staticBackdropLabel"
+                    aria-hidden="true"
+                  >
+                    <div className="modal-dialog modal-dialog-centered">
+                      <div className="modal-content">
+                        <div
+                          className="modal-header"
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginTop: 31,
+                          }}
+                        >
+                          <svg
+                            width="60"
+                            height="60"
+                            viewBox="0 0 60 60"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              clip-rule="evenodd"
+                              d="M0.833496 29.998C0.833496 13.9009 13.9002 0.831299 30.0002 0.831299C46.1293 0.831299 59.1668 13.9009 59.1668 29.998C59.1668 46.1009 46.1293 59.1646 30.0002 59.1646C13.9002 59.1646 0.833496 46.1009 0.833496 29.998ZM27.4335 18.9438C27.4335 17.5467 28.6002 16.3771 30.0002 16.3771C31.4002 16.3771 32.5377 17.5467 32.5377 18.9438V31.8355C32.5377 33.2384 31.4002 34.373 30.0002 34.373C28.6002 34.373 27.4335 33.2384 27.4335 31.8355V18.9438ZM30.0293 43.6509C28.6002 43.6509 27.4627 42.4842 27.4627 41.0842C27.4627 39.6842 28.6002 38.5467 30.0002 38.5467C31.4293 38.5467 32.5668 39.6842 32.5668 41.0842C32.5668 42.4842 31.4293 43.6509 30.0293 43.6509Z"
+                              fill="#ED5454"
+                            />
+                          </svg>
+                        </div>
+                        <div
+                          className="modal-body"
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          Are you sure want to delete?
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-evenly",
+                            alignItems: "center",
+                            padding: 20,
+                            paddingBottom: 26,
+                          }}
+                        >
+                          <button
+                            onClick={deleteemp}
+                            data-bs-dismiss="modal"
+                            className="e_del"
+                            type="button"
+                          >
+                            Delete
+                          </button>
+                          <button
+                            data-bs-dismiss="modal"
+                            className="e_back"
+                            type="button"
+                          >
+                            Go Back
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* delete emp detail pop up  */}
                 </div>
               </Tab.Pane>
 
@@ -537,7 +967,16 @@ const Manageusers = () => {
                   <tbody>
                     {designation.map((item, index) => {
                       return (
-                        <tr>
+                        <tr
+                          data-bs-toggle="modal"
+                          data-bs-target="#display_designation"
+                          onClick={(e) => {
+                            return (
+                              setTableDesignation(item._id),
+                              setTableDesigType(e.target.innerText)
+                            );
+                          }}
+                        >
                           <td>{index + 1}</td>
                           <td>
                             {item.designation === "" ? "-" : item.designation}
@@ -547,6 +986,153 @@ const Manageusers = () => {
                     })}
                   </tbody>
                 </table>
+                {/* display designation pop up  */}
+                <div
+                  className="modal fade displaydesignation"
+                  id="display_designation"
+                  data-bs-backdrop="static"
+                  data-bs-keyboard="false"
+                  tabindex="-1"
+                  aria-labelledby="staticBackdropLabel"
+                  aria-hidden="true"
+                >
+                  <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                      <div className="modal-header">
+                        <p>Designation Details</p>
+                        <button
+                          type="button"
+                          className="border-0 bg_none"
+                          data-bs-dismiss="modal"
+                          aria-label="Close"
+                        >
+                          <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 18 18"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M2.46659 17.1666L0.833252 15.5333L7.36659 8.99992L0.833252 2.46659L2.46659 0.833252L8.99992 7.36659L15.5333 0.833252L17.1666 2.46659L10.6333 8.99992L17.1666 15.5333L15.5333 17.1666L8.99992 10.6333L2.46659 17.1666Z"
+                              fill="black"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="modal-body">
+                        <p>Designation Name</p>
+                        <h2>{tableDesigType}</h2>
+                      </div>
+                      <div className="modal-footer">
+                        <button
+                          className="del_btn "
+                          type="button"
+                          data-bs-toggle="modal"
+                          // data-bs-target="#delemp"
+                          data-bs-dismiss="modal"
+                        >
+                          <svg
+                            style={{ marginRight: 10 }}
+                            className="mr-1"
+                            width="12"
+                            height="14"
+                            viewBox="0 0 12 14"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              clip-rule="evenodd"
+                              d="M11.5247 2.49523C11.7841 2.49523 12 2.71056 12 2.98456V3.23789C12 3.50522 11.7841 3.72722 11.5247 3.72722H0.475902C0.215907 3.72722 0 3.50522 0 3.23789V2.98456C0 2.71056 0.215907 2.49523 0.475902 2.49523H2.41971C2.81457 2.49523 3.1582 2.21457 3.24703 1.81857L3.34882 1.36391C3.50702 0.744581 4.02766 0.333252 4.62351 0.333252H7.37649C7.96585 0.333252 8.49233 0.744581 8.64469 1.33124L8.75362 1.8179C8.8418 2.21457 9.18543 2.49523 9.58094 2.49523H11.5247ZM10.5372 11.7559C10.7402 9.86462 11.0955 5.37133 11.0955 5.326C11.1084 5.18867 11.0637 5.05867 10.9749 4.95401C10.8796 4.85601 10.759 4.79801 10.626 4.79801H1.37901C1.24545 4.79801 1.11837 4.85601 1.03019 4.95401C0.940717 5.05867 0.896628 5.18867 0.903112 5.326C0.904303 5.33433 0.917053 5.49261 0.938368 5.75722C1.03306 6.93272 1.29678 10.2067 1.46719 11.7559C1.58779 12.8973 2.33665 13.6146 3.42137 13.6406C4.25842 13.6599 5.12075 13.6666 6.00253 13.6666C6.83309 13.6666 7.67662 13.6599 8.53959 13.6406C9.66192 13.6213 10.4101 12.9166 10.5372 11.7559Z"
+                              fill="#EC5050"
+                            />
+                          </svg>
+                          Delete
+                        </button>
+                        <button
+                          className="edit_btn"
+                          type="button"
+                          data-bs-toggle="modal"
+                          data-bs-target="#editDesignation"
+                          data-bs-dismiss="modal"
+                        >
+                          <svg
+                            style={{ marginRight: 10 }}
+                            width="12"
+                            height="12"
+                            viewBox="0 0 12 12"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              clip-rule="evenodd"
+                              d="M4.25093 11.3519L10.1085 3.77696C10.4269 3.36847 10.5401 2.8962 10.4339 2.41533C10.342 1.97817 10.0731 1.56251 9.66991 1.24719L8.68657 0.466042C7.83057 -0.214774 6.76941 -0.143109 6.16102 0.638038L5.5031 1.49157C5.41821 1.59835 5.43943 1.75601 5.54554 1.84201C5.54554 1.84201 7.20802 3.17497 7.2434 3.20364C7.35659 3.31114 7.44148 3.45447 7.4627 3.62646C7.49807 3.96329 7.26462 4.27861 6.91797 4.32161C6.75526 4.34311 6.59963 4.29295 6.48644 4.19978L4.73906 2.80948C4.65417 2.7457 4.52683 2.75932 4.45609 2.84532L0.303426 8.22018C0.034599 8.55701 -0.057368 8.99416 0.034599 9.41698L0.565178 11.7174C0.593475 11.8393 0.699591 11.9253 0.82693 11.9253L3.16148 11.8966C3.58594 11.8894 3.98211 11.6959 4.25093 11.3519ZM7.51979 10.6355H11.3265C11.6979 10.6355 12 10.9415 12 11.3178C12 11.6947 11.6979 12 11.3265 12H7.51979C7.14839 12 6.84631 11.6947 6.84631 11.3178C6.84631 10.9415 7.14839 10.6355 7.51979 10.6355Z"
+                              fill="#0A0A0A"
+                            />
+                          </svg>
+                          Edit Details
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="modal fade displaydesignation editdesignation"
+                  id="editDesignation"
+                  data-bs-backdrop="static"
+                  data-bs-keyboard="false"
+                  tabindex="-1"
+                  aria-labelledby="staticBackdropLabel"
+                  aria-hidden="true"
+                >
+                  <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                      <div className="modal-header">
+                        <p>Designation Details</p>
+                        <button
+                          type="button"
+                          className="border-0 bg_none"
+                          data-bs-dismiss="modal"
+                          aria-label="Close"
+                        >
+                          <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 18 18"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M2.46659 17.1666L0.833252 15.5333L7.36659 8.99992L0.833252 2.46659L2.46659 0.833252L8.99992 7.36659L15.5333 0.833252L17.1666 2.46659L10.6333 8.99992L17.1666 15.5333L15.5333 17.1666L8.99992 10.6333L2.46659 17.1666Z"
+                              fill="black"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="modal-body">
+                        <h6>Designation Name</h6>
+                        <input
+                          className="input_feild_designation"
+                          placeholder="eg. Legacy Manager"
+                          onChange={(e) =>
+                            setCurrentDesignation(e.target.value)
+                          }
+                        />
+                        <button
+                          onClick={updateDesignation}
+                          data-bs-dismiss="modal"
+                          type="button"
+                          className="save_new_designation_btn"
+                        >
+                          Save Details
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* display designation pop up  */}
               </Tab.Pane>
 
               <Tab.Pane className="tab_content" eventKey="tab3">

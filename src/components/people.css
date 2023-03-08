@@ -1,3 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;800;900&display=swap");
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Inter";
+}
 .main {
   background: #ffffff;
   border-bottom: 1px solid #e0e0e0;
@@ -53,7 +61,7 @@
   background: #ffffff;
   position: relative;
 }
-.attend_inn input {
+.attend_inn {
   background: #f4f4f4;
   width: 40%;
   border: none;
@@ -198,7 +206,7 @@
   text-decoration: none;
   color: #ffffff;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .logout_logo {
@@ -271,6 +279,7 @@
   border: 0 !important;
   border-radius: 0 !important;
   margin-right: 10px;
+  margin-bottom: 24px;
 }
 #tab-section .nav-tabs .nav-link:hover {
   border: none;
@@ -341,16 +350,26 @@
 }
 table thead tr {
   background: #e0e0e0;
-  font-size: 13px;
-  font-weight: 500;
+  height: 44px;
 }
 table thead tr th {
+  vertical-align: middle;
   border-bottom: none;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 13px;
+
+  color: #000;
 }
 table tbody tr td {
+  vertical-align: middle;
+  height: 44px;
   color: #646464;
-  font-size: 13px;
+  font-family: "Inter";
+  font-style: normal;
   font-weight: 400;
+  font-size: 13px;
 }
 table tbody :hover {
   cursor: pointer;
@@ -402,11 +421,6 @@ table tbody :hover {
   flex-direction: column;
 }
 
-.modal-footer {
-  display: flex;
-  flex-direction: column;
-}
-
 .modal-footer p {
   width: 100%;
   text-align: start;
@@ -420,14 +434,17 @@ table tbody :hover {
   text-align: start;
 }
 
-.modal-footer button {
+/* .modal-footer button {
   width: 100%;
   background-color: #f7b314;
   border: none;
-  color: #000;
-  font-size: 13px;
-  font-family: 400;
-}
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 16px;
+  margin-top: 16px;
+} */
 .pop_con {
   padding: 25px 25px 0px 25px;
   background: #ffffff;
@@ -438,7 +455,6 @@ table tbody :hover {
 .pop_content {
   background: #ffffff;
   display: flex;
-  width: 433px;
 
   padding: 21px 21px 0px 21px;
 
@@ -454,21 +470,464 @@ table tbody :hover {
   width: 433px;
   display: flex;
   justify-content: space-between;
-  padding: 10px 25px;
+
   background: #ffffff;
   align-items: center;
 }
-.del_btn {
+
+.add_hot_lead_content {
+  background: #f4f4f4;
+  border-radius: 5px;
+  width: 100%;
+  height: 100%;
+}
+.light_p {
+  font-size: 13px;
+  font-weight: 400;
+  color: #646464;
+}
+
+/* editemp pop styles  */
+.change_emp .modal-footer {
+  border-top: none;
+}
+
+.change_emp .modal-content {
+  width: 433px;
+  border-radius: 4px;
+  border: none;
+}
+.change_emp .modal-header {
+  border-bottom: none;
+  padding: 25px 22px 33px 22px;
+}
+.bg_none {
+  background: none;
+  font-size: 5px;
+}
+.change_emp .modal-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+.change_emp .modal-body {
+  padding: 0px 22px;
+}
+.change_emp .edit_inputs {
+  display: flex;
+}
+.change_emp .p_light {
+  font-size: 14px;
+  font-weight: 400;
+  color: #000;
+  margin-bottom: 13px;
+  margin-top: 14px;
+}
+.input_feild {
+  width: 144px;
+  outline: none;
+  border: none;
+  background: #f4f4f4;
+  border-radius: 2px;
+  width: 188px;
+  height: 40px;
+}
+.input_feild::placeholder {
+  color: #646464;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
+}
+.input_feild {
+  padding-left: 13px;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 16px;
+  color: #000;
+}
+/* input {
+  padding-left: 13px;
+} */
+.numer_91 {
+  font-size: 13px;
+  line-height: 15px;
+  color: #0e0e0e;
+  background: #ffdb63;
+  border-radius: 2px 0px 0px 2px;
+  padding: 13px 10px;
+}
+.input_feild_number {
+  background: #f4f4f4;
+  border-radius: 2px;
+  border: none;
+  outline: none;
+  width: 144px;
+  height: 40px;
+}
+.input_feild_number::placeholder {
+  color: #646464;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
+}
+.edit_inputs_left {
+  margin-right: 15px;
+}
+.edit_inputs_right {
+  display: block;
+}
+.edit_inputs select {
+  width: 188px;
+  height: 40px;
+  background: #f4f4f4;
+  border-radius: 2px;
+  border: none;
+  outline: none;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  padding-left: 12px;
+}
+
+.change_emp .modal-footer p {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+}
+option {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
+  color: #646464;
+  outline: none;
+}
+
+.choose_designation {
+  width: 400px;
+  height: 40px;
+  outline: none;
+  background: #f4f4f4;
+  border-radius: 2px;
+  border: none;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  padding-left: 12px;
+}
+.editemp_save_btn {
+  background: #f7b314;
+  width: 400px;
+  height: 40px;
+  border-radius: 1px;
+  border: none;
+}
+.e_del {
+  width: 185px;
+  height: 40px;
+  background: #ed5454;
+  border-radius: 1px;
+  border: none;
+  color: #ffffff;
+}
+.e_back {
+  width: 185px;
+  height: 40px;
+
+  background: #f4f4f4;
+  border-radius: 1px;
+  border: none;
+}
+.display_emp .modal-content {
+  width: 433px;
+  border-radius: 4px;
+
+  border: none;
+}
+.display_emp .modal-header {
+  border-bottom: none;
+  padding: 25px 22px 0px 22px;
+}
+.display_emp .modal-header h1 {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+}
+.display_emp .modal-body .container {
+  background: #f4f4f4;
+  padding: 9px;
+}
+.display_emp .modal-body .p_light_d {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
+
+  color: #636363;
+}
+.display_emp .modal-body .p_light_c {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
+
+  color: #0a0a0a;
+}
+.display_emp .modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: none;
+}
+.display_emp .modal-footer .del_btn {
+  background: #ffe8e8;
+  color: #ec5050;
+  border: none;
+  width: 47%;
+  margin-right: 10px;
+  height: 40px;
+}
+.display_emp .modal-footer .edit_btn {
+  background: #f7b314;
+  color: #000000;
+  border: none;
+  width: 47%;
+  height: 40px;
+}
+.addemp_pop_up .modal-content {
+  width: 444px;
+  border-radius: 4px;
+  border: none;
+}
+.addemp_pop_up .modal-header {
+  border-bottom: none;
+  padding: 25px 22px 0px 22px;
+}
+.addemp_pop_up .modal-header h1 {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+  color: #000;
+}
+.addemp_pop_up .modal-body .p_light_d {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
+  color: #000;
+}
+.addemp_pop_up .modal-body .container {
+  padding: 4px;
+}
+.addemp_pop_up .modal-body .container .row .add_emp_input {
+  width: 188px;
+  height: 40px;
+  background: #f4f4f4;
+  border-radius: 2px;
+  margin-top: 10px;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+
+.addemp_pop_up .modal-body .container .row .input_feild_number {
+  padding: 5px;
+  background: #f4f4f4;
+  border-radius: 2px;
+  border: none;
+  outline: none;
+  width: 144px;
+  height: 40px;
+}
+.addemp_pop_up .modal-body .container .row .input_feild_number::placeholder {
+  color: #646464;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
+}
+.addemp_pop_up select {
+  width: 188px;
+  height: 40px;
+  background: #f4f4f4;
+  border-radius: 2px;
+  border: none;
+  outline: none;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  padding-left: 12px;
+}
+.addemp_pop_up option {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
+  color: #646464;
+  outline: none;
+}
+.addemp_pop_up .modal-footer {
+  border-top: none;
+  padding: 0px 16px;
+}
+.addemp_pop_up .modal-footer p {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
+  color: #0a0a0a;
+  margin-top: 6px;
+}
+.addemp_pop_up .modal-body {
+  padding-bottom: 0px;
+}
+.addemp_pop_up .editemp_save_btn {
+  width: 100%;
+  margin-bottom: 22px;
+}
+.addemp_pop_up .modal-footer .need_width {
+  width: 100%;
+  height: 40px;
+}
+/*  designation tab section show designation pop up  */
+.displaydesignation .modal-content {
+  width: 433px;
+  background: #ffffff;
+  border-radius: 4px;
+  padding: 25px 22px;
+  border: none;
+}
+.displaydesignation .modal-header {
+  padding: 0;
+  border-bottom: none;
+}
+.displaydesignation .modal-header p {
+  margin-bottom: 0;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+  color: #000000;
+}
+.displaydesignation .modal-body {
+  background: #f4f4f4;
+  border-radius: 2px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+.displaydesignation .modal-body p {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
+  color: #636363;
+}
+.displaydesignation .modal-body h2 {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
+  color: #0a0a0a;
+}
+.displaydesignation .modal-footer {
+  display: flex;
+  border-top: none;
+  padding: 0;
+}
+.displaydesignation .modal-footer .del_btn {
   background: #ffe8e8;
   color: #ec5050;
   border: none;
   width: 188px;
+  margin: 0;
+  padding: 0;
+  margin-right: 10px;
   height: 40px;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
 }
-.edit_btn {
+.displaydesignation .modal-footer .edit_btn {
   background: #f7b314;
   color: #000000;
   border: none;
   width: 188px;
+  margin: 0;
+  padding: 0;
   height: 40px;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
 }
+
+/* edit designation pop up  */
+.editdesignation .modal-body {
+  background: white;
+  padding: 0;
+  margin: 0;
+  margin-top: 33px;
+}
+.editdesignation .modal-body h6 {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
+}
+.editdesignation .modal-body .input_feild_designation {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
+  width: 388px;
+  height: 40px;
+  background: #f4f4f4;
+  border-radius: 2px;
+  border: none;
+  padding: 12px;
+  margin: 10px 0 16px 0;
+  outline: none;
+}
+.save_new_designation_btn {
+  width: 389px;
+  height: 40px;
+  background: #f7b314;
+  border-radius: 1px;
+  border: none;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
+  color: #0a0a0a;
+}
+
+/*  designation tab section show designation pop up  */ ;
