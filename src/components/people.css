@@ -1,5 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;800;900&display=swap");
 
+:root {
+  --placeholder_text: #646464;
+  --nonLinearGradient_btn: #f7b314;
+  --grey_bg: #f4f4f4;
+  --light_btn: #ffecbe;
+  --border_clr: #e0e0e0;
+}
+
 * {
   padding: 0;
   margin: 0;
@@ -8,7 +16,7 @@
 }
 .main {
   background: #ffffff;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border_clr);
   width: 100%;
   height: 72px;
   padding: 24px;
@@ -31,7 +39,7 @@
   width: 100%;
   padding: 16px;
   height: 72px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border_clr);
   font-weight: 600;
   font-size: 20px;
   background: #ffffff;
@@ -62,7 +70,7 @@
   position: relative;
 }
 .attend_inn {
-  background: #f4f4f4;
+  background: var(--grey_bg);
   width: 40%;
   border: none;
   margin: 24px;
@@ -76,7 +84,7 @@
 }
 .slogo {
   position: absolute;
-  color: #646464;
+  color: var(--placeholder_text);
   top: 41%;
   left: 3%;
   z-index: 456;
@@ -102,7 +110,7 @@
   text-align: center;
 }
 .login_label {
-  color: #646464;
+  color: var(--placeholder_text);
   font-size: 16px;
   margin: 11px 0;
 }
@@ -134,13 +142,17 @@
   height: 50px;
   width: 347px;
   text-align: center;
-  background: linear-gradient(to right, #ffdb6c, #f7b314);
+  background: linear-gradient(to right, #ffdb6c, var(--nonLinearGradient_btn));
   border-radius: 5px;
   border: none;
   font-size: 16px;
   font-weight: 600;
   line-height: 16px;
   margin-top: 31px;
+  vertical-align: middle;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .login_form h2 {
@@ -168,10 +180,6 @@
   align-items: start;
   flex-direction: column;
 }
-.side_logo {
-  margin: 30px 41px 84px 24px;
-  cursor: pointer;
-}
 .side_bar ul {
   padding: 10px;
 }
@@ -192,10 +200,10 @@
   fill: #fff;
 }
 .side_bar ul li a.active svg path {
-  fill: #f7b314;
+  fill: var(--nonLinearGradient_btn);
 }
 .side_bar ul li a:hover svg path {
-  fill: #f7b314;
+  fill: var(--nonLinearGradient_btn);
 }
 
 .side_bar ul li a:hover,
@@ -217,7 +225,7 @@
 
 /* table css starts here  */
 .table_container {
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border_clr);
   background: #ffffff;
   margin-top: 20px;
 }
@@ -227,7 +235,7 @@
   width: 102px;
   font-size: 13px;
   color: #ec5050;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border_clr);
   box-shadow: 0px 11px 18px -4px rgba(0, 0, 0, 0.16);
   border-radius: 2px;
   justify-content: space-evenly;
@@ -250,7 +258,9 @@
   background-color: #428bca;
   padding: 5px 15px;
 }
-
+.side_logo {
+  padding: 30px 41px 100px 24px;
+}
 #exTab2 h3 {
   color: white;
   background-color: #428bca;
@@ -270,11 +280,6 @@
   padding: 24px;
   background: #ffffff;
 }
-/* .nav-tabs {
-  background: #cbb4b4;
-  border: none;
-  border-radius: 0%;
-} */
 #tab-section .nav-link {
   border: 0 !important;
   border-radius: 0 !important;
@@ -284,14 +289,14 @@
 #tab-section .nav-tabs .nav-link:hover {
   border: none;
   color: #000;
-  background: #f7b314;
+  background: var(--nonLinearGradient_btn);
   border-radius: 0%;
 }
 
 .nav-tabs .nav-link.active {
   border: none;
   color: #000;
-  background: #f7b314;
+  background: var(--nonLinearGradient_btn);
   border-radius: 0%;
 }
 .nav-item a {
@@ -299,45 +304,28 @@
 }
 .nav-link:hover,
 .nav-link:focus {
-  color: #646464;
-  background: #f4f4f4;
+  color: var(--placeholder_text);
+  background: var(--grey_bg);
   border: none;
 }
 .nav-link {
-  color: #646464;
-  background: #f4f4f4;
+  color: var(--placeholder_text);
+  background: var(--grey_bg);
   font-size: 14px;
   font-weight: 400;
 }
 .nav {
   border: none;
-  color: #646464;
+  color: var(--placeholder_text);
 }
 .tab_content p {
   font-size: 16px;
   font-weight: 600;
 }
-.tab_input {
-  margin-right: 10px;
-}
 .table_container {
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border_clr);
 }
-.emp_input {
-  background: #ffffff;
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-}
-.emp_input input {
-  background: #f4f4f4;
-  width: 70%;
-  border: none;
-  font-weight: 400;
-  padding: 12px 12px 12px 36px;
-  font-size: 13px;
-  border-radius: 1px;
-}
+
 .emp_slogo {
   position: absolute;
   z-index: 5;
@@ -346,10 +334,10 @@
 }
 .tablebordered {
   margin-top: 16px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border_clr);
 }
 table thead tr {
-  background: #e0e0e0;
+  background: var(--border_clr);
   height: 44px;
 }
 table thead tr th {
@@ -365,7 +353,7 @@ table thead tr th {
 table tbody tr td {
   vertical-align: middle;
   height: 44px;
-  color: #646464;
+  color: var(--placeholder_text);
   font-family: "Inter";
   font-style: normal;
   font-weight: 400;
@@ -373,25 +361,9 @@ table tbody tr td {
 }
 table tbody :hover {
   cursor: pointer;
-  background: #f4f4f4;
+  background: var(--grey_bg);
 }
-.emp_input input:focus {
-  outline: none;
-}
-.download_btn {
-  background: #ffecbe;
-  border: none;
-  font-size: 13px;
-  font-weight: 500;
-  padding: 10px;
-}
-.add_emp_btn {
-  background: linear-gradient(90.11deg, #ffdb6c -9.01%, #f7b314 127.45%);
-  border-radius: 1px;
-  border: none;
-  font-size: 13px;
-  font-weight: 500;
-}
+
 /* employee modal  */
 .modal-title {
   font-family: 600 !important;
@@ -436,7 +408,7 @@ table tbody :hover {
 
 /* .modal-footer button {
   width: 100%;
-  background-color: #f7b314;
+  background-color: var(--nonLinearGradient_btn);
   border: none;
   font-family: "Inter";
   font-style: normal;
@@ -464,7 +436,7 @@ table tbody :hover {
 .pop_right {
   width: 433px;
   padding: 25px;
-  background: #f4f4f4;
+  background: var(--grey_bg);
 }
 .foo {
   width: 433px;
@@ -476,7 +448,7 @@ table tbody :hover {
 }
 
 .add_hot_lead_content {
-  background: #f4f4f4;
+  background: var(--grey_bg);
   border-radius: 5px;
   width: 100%;
   height: 100%;
@@ -484,7 +456,7 @@ table tbody :hover {
 .light_p {
   font-size: 13px;
   font-weight: 400;
-  color: #646464;
+  color: var(--placeholder_text);
 }
 
 /* editemp pop styles  */
@@ -526,13 +498,13 @@ table tbody :hover {
   width: 144px;
   outline: none;
   border: none;
-  background: #f4f4f4;
+  background: var(--grey_bg);
   border-radius: 2px;
   width: 188px;
   height: 40px;
 }
 .input_feild::placeholder {
-  color: #646464;
+  color: var(--placeholder_text);
   font-family: "Inter";
   font-style: normal;
   font-weight: 400;
@@ -548,9 +520,6 @@ table tbody :hover {
   line-height: 16px;
   color: #000;
 }
-/* input {
-  padding-left: 13px;
-} */
 .numer_91 {
   font-size: 13px;
   line-height: 15px;
@@ -560,15 +529,21 @@ table tbody :hover {
   padding: 13px 10px;
 }
 .input_feild_number {
-  background: #f4f4f4;
+  background: var(--grey_bg);
   border-radius: 2px;
   border: none;
   outline: none;
   width: 144px;
   height: 40px;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 13px;
+  padding-left: 10px;
 }
+
 .input_feild_number::placeholder {
-  color: #646464;
+  color: var(--placeholder_text);
   font-family: "Inter";
   font-style: normal;
   font-weight: 400;
@@ -584,7 +559,7 @@ table tbody :hover {
 .edit_inputs select {
   width: 188px;
   height: 40px;
-  background: #f4f4f4;
+  background: var(--grey_bg);
   border-radius: 2px;
   border: none;
   outline: none;
@@ -608,7 +583,7 @@ option {
   font-weight: 400;
   font-size: 13px;
   line-height: 16px;
-  color: #646464;
+  color: var(--placeholder_text);
   outline: none;
 }
 
@@ -616,7 +591,7 @@ option {
   width: 400px;
   height: 40px;
   outline: none;
-  background: #f4f4f4;
+  background: var(--grey_bg);
   border-radius: 2px;
   border: none;
   font-family: "Inter";
@@ -626,7 +601,7 @@ option {
   padding-left: 12px;
 }
 .editemp_save_btn {
-  background: #f7b314;
+  background: var(--nonLinearGradient_btn);
   width: 400px;
   height: 40px;
   border-radius: 1px;
@@ -639,12 +614,19 @@ option {
   border-radius: 1px;
   border: none;
   color: #ffffff;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
 }
 .e_back {
   width: 185px;
   height: 40px;
-
-  background: #f4f4f4;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  background: var(--grey_bg);
   border-radius: 1px;
   border: none;
 }
@@ -666,7 +648,7 @@ option {
   line-height: 22px;
 }
 .display_emp .modal-body .container {
-  background: #f4f4f4;
+  background: var(--grey_bg);
   padding: 9px;
 }
 .display_emp .modal-body .p_light_d {
@@ -702,7 +684,7 @@ option {
   height: 40px;
 }
 .display_emp .modal-footer .edit_btn {
-  background: #f7b314;
+  background: var(--nonLinearGradient_btn);
   color: #000000;
   border: none;
   width: 47%;
@@ -739,16 +721,26 @@ option {
 .addemp_pop_up .modal-body .container .row .add_emp_input {
   width: 188px;
   height: 40px;
-  background: #f4f4f4;
+  background: var(--grey_bg);
   border-radius: 2px;
   margin-top: 10px;
   padding: 12px;
+  border: none;
+  outline: none;
   margin-bottom: 14px;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
 }
-
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 .addemp_pop_up .modal-body .container .row .input_feild_number {
   padding: 5px;
-  background: #f4f4f4;
+  background: var(--grey_bg);
   border-radius: 2px;
   border: none;
   outline: none;
@@ -756,7 +748,7 @@ option {
   height: 40px;
 }
 .addemp_pop_up .modal-body .container .row .input_feild_number::placeholder {
-  color: #646464;
+  color: var(--placeholder_text);
   font-family: "Inter";
   font-style: normal;
   font-weight: 400;
@@ -766,7 +758,7 @@ option {
 .addemp_pop_up select {
   width: 188px;
   height: 40px;
-  background: #f4f4f4;
+  background: var(--grey_bg);
   border-radius: 2px;
   border: none;
   outline: none;
@@ -782,7 +774,7 @@ option {
   font-weight: 400;
   font-size: 13px;
   line-height: 16px;
-  color: #646464;
+  color: var(--placeholder_text);
   outline: none;
 }
 .addemp_pop_up .modal-footer {
@@ -831,7 +823,7 @@ option {
   color: #000000;
 }
 .displaydesignation .modal-body {
-  background: #f4f4f4;
+  background: var(--grey_bg);
   border-radius: 2px;
   margin-top: 24px;
   margin-bottom: 16px;
@@ -873,7 +865,7 @@ option {
   line-height: 16px;
 }
 .displaydesignation .modal-footer .edit_btn {
-  background: #f7b314;
+  background: var(--nonLinearGradient_btn);
   color: #000000;
   border: none;
   width: 188px;
@@ -909,7 +901,7 @@ option {
   line-height: 16px;
   width: 388px;
   height: 40px;
-  background: #f4f4f4;
+  background: var(--grey_bg);
   border-radius: 2px;
   border: none;
   padding: 12px;
@@ -919,7 +911,7 @@ option {
 .save_new_designation_btn {
   width: 389px;
   height: 40px;
-  background: #f7b314;
+  background: var(--nonLinearGradient_btn);
   border-radius: 1px;
   border: none;
   font-family: "Inter";
@@ -929,5 +921,94 @@ option {
   line-height: 16px;
   color: #0a0a0a;
 }
+.add_designation .modal-content {
+  width: 433px;
+  background: #ffffff;
+  border-radius: 4px;
+  padding: 25px 22px;
+  border: none;
+}
+.add_designation .modal-header {
+  border-bottom: none;
+}
+.add_designation .modal-content .modal-body {
+  background: none;
+  border-radius: 2px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+.add_designation .modal-body .input_feild_designation {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
+  width: 388px;
+  height: 40px;
+  background: var(--grey_bg);
+  border-radius: 2px;
+  border: none;
+  padding: 12px;
+  margin: 10px 0 16px 0;
+  outline: none;
+}
+/*  designation tab section show designation pop up  */
 
-/*  designation tab section show designation pop up  */ ;
+/* search input styles  */
+.emp_input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+.emp_input_box {
+  height: 38px;
+  width: 70%;
+  padding-left: 38px;
+  background: var(--grey_bg);
+  border-radius: 1px;
+  border: none;
+  outline: none;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+}
+.download_btn {
+  background: var(--light_btn);
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px;
+  height: 38px;
+}
+.add_emp_btn {
+  background: linear-gradient(
+    90.11deg,
+    #ffdb6c -9.01%,
+    var(--nonLinearGradient_btn) 127.45%
+  );
+  border-radius: 1px;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px;
+  height: 38px;
+}
+.emp_input .emp_slogo {
+  position: absolute;
+  top: 30%;
+  left: 14px;
+}
+.loading {
+  height: 20px;
+  width: 20px;
+}
+.nav .nav-item a {
+  background: var(--grey_bg);
+}
+@media screen and (max-width: 1024px) {
+  .emp_input_box {
+    width: 54%;
+  }
+}

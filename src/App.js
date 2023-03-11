@@ -4,9 +4,7 @@ import Login from "./components/login/Login";
 import Attendance from "./components/attendance/Attendance";
 import Mangeusers from "./components/manage_users/Manageusers";
 import Floorplan from "./components/floor_plan/Floorplan";
-import Employees from "./components/manage_users/employees/Employees";
-import Designation from "./components/manage_users/designation/Designation";
-import Teams from "./components/manage_users/teams/Teams";
+import Page404 from "./re_use/Page404";
 
 function App() {
   return (
@@ -18,9 +16,7 @@ function App() {
           <Route path="/attendance" element={<Attendance />} />
           <Route path="/manageusers" element={<Mangeusers />} />
           <Route path="/floorplan" element={<Floorplan />} />
-          {/* <Route path="/employees" element={<Employees />} />
-          <Route path="/designation" element={<Designation />} />
-          <Route path="/teams" element={<Teams />} /> */}
+          <Route path="*" element={<Page404 />} />
         </Routes>
       </BrowserRouter>
     </div>
