@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
 import CloseIcon from "../../../re_use/CloseIcon";
-import { Tab } from "react-bootstrap";
-import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import Loading from "../../../re_use/Loading";
 import axiosInterceptor from "../../../helpers/axiosInterceptor";
 
-const Designation = (props) => {
-  const base_url = props.base_url;
-  const headers = props.headers;
+const Designation = () => {
   const [designation, setDesignation] = useState([]);
   const [totalDesignation, setTotalDesignation] = useState();
   const [tableDesignation, setTableDesignation] = useState();
@@ -19,71 +15,56 @@ const Designation = (props) => {
   const [btnLoader, setBtnLoader] = useState(true);
   const [search, setSearch] = useState("");
   // get all designation api
-  const fetchAllDesignation = () => {
-    axiosInterceptor.get("/get-all-designation").then((res) => {
-      console.log(res);
-      return (
-        setDesignation(res.data.result),
-        setTotalDesignation(res.data.result.length)
-      );
+  const fetchAllDesignation = async () => {
+    axiosInterceptor.get(`/get-all-designation`).then((res) => {
+      setBtnLoader(false);
+
+      setDesignation(res.data.result);
+      setTotalDesignation(res.data.result.length);
     });
-    // let res = await fetch(`${base_url}/get-all-designation`, {
-    //   headers,
-    // });
-    // setBtnLoader(false);
-    // const data = await res.json();
-    // setDesignation(data.result);
-    // setTotalDesignation(data.result.length);
   };
+
   useEffect(() => {
     fetchAllDesignation();
   }, []);
 
   //add new designation api
-  const addNewDesignation = async () => {
-    let response = await axios.post(
-      `${base_url}/add-designation`,
-      {
+  const addNewDesignation = () => {
+    axiosInterceptor
+      .post(`/add-designation`, {
         designation: toSendDesignation,
-      },
-      {
-        headers,
-      }
-    );
-    setBtnLoader(false);
-    fetchAllDesignation();
-
-    setToSendDesignation("");
+      })
+      .then((res) => {
+        setBtnLoader(false);
+        fetchAllDesignation();
+        setToSendDesignation("");
+        toast.success(res.data.message);
+      });
   };
 
   //update designatin api
-  const updateDesignation = async () => {
-    const response = await axios.put(
-      `${base_url}/update-designation?designation_id=${tableDesignation}`,
-      { designation: currentDesignation },
-      {
-        headers,
-      }
-    );
-    setBtnLoader(false);
-    fetchAllDesignation();
-    let result = response.data;
-
-    setTableDesigType("");
+  const updateDesignation = () => {
+    axiosInterceptor
+      .put(`/update-designation?designation_id=${tableDesignation}`, {
+        designation: currentDesignation,
+      })
+      .then((res) => {
+        setBtnLoader(false);
+        fetchAllDesignation();
+        setTableDesigType("");
+        toast.success(res.data.message);
+      });
   };
 
   //delete designation api
-  const deleteDesignation = async () => {
-    let response = await axios.delete(
-      `${base_url}/delete-designation?designation_id=${tableDesignation}`,
-      {
-        headers,
-      }
-    );
-    setBtnLoader(false);
-    fetchAllDesignation();
-
-    let result = response.data;
+  const deleteDesignation = () => {
+    axiosInterceptor
+      .delete(`/delete-designation?designation_id=${tableDesignation}`)
+      .then((res) => {
+        setBtnLoader(false);
+        fetchAllDesignation();
+        toast.success(res.data.message);
+      });
   };
   return (
     <>
@@ -162,10 +143,12 @@ const Designation = (props) => {
         </div>
       </div>
       {btnLoader === false ? (
-        <table className="table tablebordered">
+        <table className="table tablebordered" pagination={{ pageSize: 10 }}>
           <thead>
             <tr>
-              <th className="col-2">Sl.No.</th>
+              <th style={{ paddingLeft: "35px" }} className="col-2">
+                Sl.No.
+              </th>
               <th>Designation</th>
             </tr>
           </thead>
@@ -179,6 +162,7 @@ const Designation = (props) => {
               .map((item, index) => {
                 return (
                   <tr
+                    pageSize={10}
                     key={item.id}
                     data-bs-toggle="modal"
                     data-bs-target="#display_designation"
@@ -189,7 +173,7 @@ const Designation = (props) => {
                       );
                     }}
                   >
-                    <td>{index + 1}</td>
+                    <td style={{ paddingLeft: "35px" }}>{index + 1}</td>
                     <td>{item.designation === "" ? "-" : item.designation}</td>
                   </tr>
                 );
@@ -410,7 +394,6 @@ const Designation = (props) => {
         </div>
       </div>
       {/* display designation pop up  */}
-      <ToastContainer />
     </>
   );
 };

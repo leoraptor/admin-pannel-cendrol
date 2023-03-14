@@ -1,29 +1,38 @@
 import React, { useState, useEffect } from "react";
 import CloseIcon from "../../../re_use/CloseIcon";
-import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import Loading from "../../../re_use/Loading";
+import axiosInterceptor from "../../../helpers/axiosInterceptor";
+import { useFormik } from "formik";
+import { addEmpSchema } from "../../../schemas/validation";
+import { Pagination } from "antd";
+import ShowIcon from "../../../re_use/ShowIcon";
 
-const Employees = (props) => {
-  const base_url = props.base_url;
-  const headers = props.headers;
-
-  const [name, setName] = useState("");
-  const [empId, setEmpId] = useState("");
-  const [email, setEmail] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [password, setPassword] = useState("");
-  const [dept, setDept] = useState("");
-  const [role, setRole] = useState("");
+const Employees = () => {
   const [department, setDepartment] = useState([]);
-  const [empty, setEmpty] = useState("");
+  const [dataSource, setDataSource] = useState(null);
+  const [page, setPage] = useState(1);
+
+  const initialValuesOfAddNewEmp = {
+    empName: "",
+    empEmail: "",
+    empMobile: "",
+    empId: "",
+    password: "",
+    empDept: "",
+    empDesign: "",
+  };
   //all designation data
   const [designation, setDesignation] = useState([]);
 
   //all employee data
   const [empDetails, setEmpDetails] = useState([]);
+
   const [totalEmp, setTotalEmp] = useState();
+  console.log(totalEmp);
+  const [totalPages, setTotalPages] = useState();
+  // console.log(totalPages);
   //tab section
   const [activeTab, setActiveTab] = useState("tab1");
   // individual emp id from table row state
@@ -41,91 +50,55 @@ const Employees = (props) => {
   const [newDesignation, setNewDesignation] = useState(
     individualEmp?.designation
   );
+
+  const initialValuesEditEmp = {
+    newName: individualEmp?.name,
+    newEmpId: individualEmp?.email,
+    newUserId: individualEmp?.emp_id,
+    newPass: individualEmp?.password,
+    newMob: individualEmp?.mobile,
+    newTeam: individualEmp?.department,
+    newDesignation: individualEmp?.designation,
+  };
   const [btnLoader, setBtnLoader] = useState(true);
   const [search, setSearch] = useState("");
-  // console.log(designation);
-  const fetchAllDepartment = async () => {
-    axios
-      .get(`${base_url}/get-all-department`, {
-        headers,
-      })
-      .then((res) => {
-        return setDepartment(res.data.result);
-      });
+  const fetchAllDepartment = () => {
+    axiosInterceptor.get(`/get-all-department`).then((res) => {
+      return setDepartment(res.data.result);
+    });
   };
-  const fetchAllDesignation = async () => {
-    axios
-      .get(`${base_url}/get-all-designation`, {
-        headers,
-      })
-      .then((res) => {
-        return setDesignation(res.data.result);
-      });
+  const fetchAllDesignation = () => {
+    axiosInterceptor.get(`/get-all-designation`).then((res) => {
+      return setDesignation(res.data.result);
+    });
   };
-  const getAllEmployee = async () => {
-    axios
-      .get(`${base_url}/get-all-employee?page=1&limit=10&search=`, {
-        headers,
-      })
+
+  const getAllEmployee = (page) => {
+    axiosInterceptor
+      .get(`/get-all-employee?page=${page}&limit=10&search=`)
       .then((res) => {
         return (
+          console.log(res),
           setEmpDetails(res.data.result.listOfEmployee),
           setTotalEmp(res.data.result.totalEmployee),
-          setBtnLoader(false)
+          setBtnLoader(false),
+          setTotalPages(res.data.result.numberOfPage)
         );
       });
   };
-
-  const getIndEmp = async (i) => {
+  const getIndEmp = (i) => {
     let emp_id = i;
     setTableF(emp_id);
 
-    const response = await axios.get(
-      `${base_url}/get-employee?employee_id=${emp_id}`,
-
-      {
-        headers,
-      }
-    );
-    setIndividualEmp(response.data.result);
-  };
-  const addingEmployee = async () => {
-    const response = await axios.post(
-      `${base_url}/add-employee`,
-      {
-        name: name,
-        emp_id: empId,
-        email: email,
-        mobile: mobile,
-        password: password,
-        department: dept,
-        designation: role,
-      },
-      {
-        headers,
-      }
-    );
-    let result = response.data;
-    if (result) {
-      toast.success("Employee Added successfully");
-    } else {
-      toast.error("Failed");
-    }
-    getAllEmployee();
-    setName("");
-    setEmpId("");
-    setEmail("");
-    setMobile("");
-    setPassword("");
-    setDept("");
-    setRole("");
+    axiosInterceptor.get(`/get-employee?employee_id=${emp_id}`).then((res) => {
+      setIndividualEmp(res.data.result);
+    });
   };
 
-  const saveNewEmp = async (e) => {
+  const saveNewEmp = (e) => {
     e.preventDefault();
-    const response = await axios.put(
-      `${base_url}/update-employee?employee_id=${tabelF}`,
-      {
+    axiosInterceptor
+      .put(`/update-employee?employee_id=${tabelF}`, {
         name: newName,
         emp_id: newUserId,
         email: newEmpId,
@@ -133,42 +106,78 @@ const Employees = (props) => {
         password: newPass,
         department: newTeam,
         designation: newDesignation,
-      },
-      {
-        headers,
-      }
-    );
-    getAllEmployee();
-    getIndEmp();
-    let result = response.data;
-    if (result) {
-      toast.success("Employee Details Updated");
-    } else {
-      toast.error("Update Failed");
-    }
+      })
+      .then((res) => {
+        getIndEmp();
+        getAllEmployee(1);
+        toast.success(res.data.message);
+      });
   };
 
-  const deleteemp = async () => {
-    const response = await axios.delete(
-      `${base_url}/delete-employee?employee_id=${tabelF}`,
-      {
-        headers,
-      }
-    );
-    getAllEmployee();
-    let result = response.data;
-    if (result) {
-      toast.success("Employee Deleted");
-    }
+  const deleteemp = () => {
+    axiosInterceptor
+      .delete(`/delete-employee?employee_id=${tabelF}`)
+      .then((res) => {
+        getAllEmployee(1);
+        toast.success(res.data.message);
+      });
   };
   useEffect(() => {
-    getAllEmployee();
+    // axiosInterceptor
+    //   .get(`/get-all-employee?page=1&limit=10&search=ghhtro`)
+    //   .then((res) => {
+    //     console.log(res);
+    //   });
+
+    getAllEmployee(page);
     fetchAllDepartment();
     fetchAllDesignation();
   }, []);
+
+  const filteredEmpDetails = !search
+    ? dataSource
+    : dataSource.filter(
+        (person) =>
+          person.name.toLowerCase().includes(search.toLowerCase()) ||
+          person.emp_id.toLowerCase().includes(search.toLowerCase()) ||
+          person.designation.toLowerCase().includes(search.toLowerCase())
+      );
+
+  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
+    useFormik({
+      initialValues: initialValuesOfAddNewEmp,
+      validationSchema: addEmpSchema,
+      onSubmit: (values, action) => {
+        axiosInterceptor
+          .post(`/add-employee`, {
+            name: values.empName,
+            emp_id: values.empId,
+            email: values.empEmail,
+            mobile: values.empMobile,
+            password: values.password,
+            department: values.empDept,
+            designation: values.empDesign,
+          })
+          .then((res) => {
+            toast.success(res.data.message);
+            getAllEmployee(1);
+            action.resetForm();
+          })
+          .catch((error) => {
+            toast.error(error.data.message);
+          });
+      },
+    });
+
+  const searchEmp = () => {
+    axiosInterceptor
+      .get(`/get-all-employee?page=1&limit=10&search=${search}`)
+      .then((res) => {
+        setDataSource(res.data.result.listOfEmployee);
+      });
+  };
   return (
     <div>
-      {" "}
       <div className="tab_content">
         <p className="pt-1">Employees &#40;{totalEmp}&#41;</p>
         <div className="emp_input">
@@ -197,11 +206,15 @@ const Employees = (props) => {
               stroke-linejoin="round"
             />
           </svg>
+
           <input
             className="emp_input_box"
             placeholder="Search by name, Designation, employee ID"
             onChange={(e) => setSearch(e.target.value.toLowerCase())}
           />
+          <button className="input_search" onClick={searchEmp}>
+            Search
+          </button>
 
           <button className="download_btn">
             Download Report
@@ -242,8 +255,9 @@ const Employees = (props) => {
             Add Employee
           </button>
           {/* add emp pop up  */}
+
           <div
-            className="modal fade addemp_pop_up"
+            className={`modal fade addemp_pop_up }`}
             id="addemp_pop_up"
             data-bs-backdrop="static"
             data-bs-keyboard="false"
@@ -276,148 +290,299 @@ const Employees = (props) => {
                   </button>
                 </div>
                 <div className="modal-body">
-                  <div className="container">
-                    <div className="row">
-                      <div className="col left_side">
-                        <label className="p_light_d">Employee Name</label>
-                        <input
-                          className="add_emp_input"
-                          type="text"
-                          placeholder="Sample User"
-                          defaultValue={empty}
-                          onChange={(e) => setName(e.target.value)}
-                        />
-
-                        <label className="p_light_d">User ID</label>
-                        <input
-                          className="add_emp_input"
-                          type="email"
-                          placeholder="eg. user@cendrol.com"
-                          defaultValue={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                        />
-
-                        <label className="p_light_d">Mobile Number</label>
-                        <div className="d-flex">
-                          <div className="numer_91">+91</div>
+                  <form onSubmit={handleSubmit}>
+                    <div className="container">
+                      <div className="row">
+                        <div className="col left_side">
+                          <label htmlFor="empName" className="p_light_d">
+                            Employee Name
+                          </label>
                           <input
-                            defaultValue={mobile}
-                            type="number"
-                            className="input_feild_number"
-                            placeholder="eg.8256XXXX64"
-                            onChange={(e) => setMobile(e.target.value)}
+                            className="add_emp_input"
+                            type="text"
+                            id="empName"
+                            placeholder="Sample User"
+                            value={values.empName}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
                           />
+                          {errors.empName && touched.empName ? (
+                            <p className="mt-2 error_mess_addemp">
+                              {errors.empName}
+                            </p>
+                          ) : null}
+                          <label htmlFor="empEmail" className="p_light_d">
+                            User ID
+                          </label>
+                          <input
+                            className="add_emp_input"
+                            type="email"
+                            id="empEmail"
+                            placeholder="eg. user@cendrol.com"
+                            value={values.empEmail}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                          />
+
+                          {errors.empEmail && touched.empEmail ? (
+                            <p className="mt-2 error_mess_addemp">
+                              {errors.empEmail}
+                            </p>
+                          ) : null}
+                          <label htmlFor="empMobile" className="p_light_d">
+                            Mobile Number
+                          </label>
+                          <div className="d-flex ">
+                            <div className="numer_91">+91</div>
+                            <input
+                              id="empMobile"
+                              type="number"
+                              maxLength={10}
+                              onKeyDown={(event) => {
+                                const value = event.target.value;
+                                if (value.length >= 10 && event.keyCode !== 8) {
+                                  event.preventDefault();
+                                }
+                              }}
+                              value={values.empMobile}
+                              className="input_feild_number"
+                              placeholder="eg.8256XXXX64"
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                          </div>
+                          {errors.empMobile && touched.empMobile ? (
+                            <p className="mt-2 error_mess_addemp">
+                              {errors.empMobile}
+                            </p>
+                          ) : null}
+                        </div>
+                        <div className="col">
+                          <label htmlFor="empId" className="p_light_d">
+                            Employee ID
+                          </label>
+                          <input
+                            className="add_emp_input"
+                            id="empId"
+                            placeholder="CEN070"
+                            value={values.empId}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            // onChange={(e) => setEmpId(e.target.value)}
+                          />
+                          {errors.empId && touched.empId ? (
+                            <p className="mt-2 error_mess_addemp">
+                              {errors.empId}
+                            </p>
+                          ) : null}
+                          <label htmlFor="empPassword" className="p_light_d">
+                            Password
+                          </label>
+                          <input
+                            className="add_emp_input"
+                            type="password"
+                            id="password"
+                            value={values.password}
+                            placeholder="Password"
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            // onChange={(e) => setPassword(e.target.value)}
+                          />
+                          <ShowIcon />
+                          {errors.password && touched.password ? (
+                            <p className="mt-2 error_mess_addemp">
+                              {errors.password}
+                            </p>
+                          ) : null}
+                          <label htmlFor="empDept" className="p_light_d">
+                            Team
+                          </label>
+                          <select
+                            id="empDept"
+                            value={values.empDept}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            // onChange={(e) => setDept(e.target.value)}
+                          >
+                            <option>Choose team</option>
+                            {department?.map((data) => {
+                              return (
+                                <option value={data._id}>
+                                  {data.department}
+                                </option>
+                              );
+                            })}
+                          </select>
+                          {errors.empDept && touched.empDept ? (
+                            <p className=" error_mess_addemp">
+                              {errors.empDept}
+                            </p>
+                          ) : null}
                         </div>
                       </div>
-                      <div className="col">
-                        <label className="p_light_d">Employee ID</label>
-                        <input
-                          className="add_emp_input"
-                          type="text"
-                          placeholder="CEN070"
-                          defaultValue={empId}
-                          onChange={(e) => setEmpId(e.target.value)}
-                        />
-                        <label className="p_light_d">Password</label>
-                        <input
-                          className="add_emp_input"
-                          type="password"
-                          placeholder="Password"
-                          defaultValue={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <label className="p_light_d">Team</label>
-                        <select
-                          id="sel1"
-                          defaultValue={dept}
-                          onChange={(e) => setDept(e.target.value)}
-                        >
-                          <option>Choose team</option>
-                          {department?.map((data) => {
-                            return (
-                              <option value={data._id}>
-                                {data.department}
-                              </option>
-                            );
-                          })}
-                        </select>
-                      </div>
                     </div>
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <p className="p_light2">Designation</p>
-                  <select
-                    defaultValue={false}
-                    className="choose_designation need_width"
-                    onChange={(e) => setRole(e.target.value)}
-                  >
-                    <option>Choose team</option>;
-                    {designation?.map((data) => {
-                      return (
-                        <option value={data._id}>{data.designation}</option>
-                      );
-                    })}
-                  </select>
-                  <button
-                    onClick={addingEmployee}
-                    data-bs-dismiss="modal"
-                    type="button"
-                    className="editemp_save_btn mt-3"
-                  >
-                    Add Employee
-                  </button>
+                    <div className="modal-footer">
+                      <p htmlFor="empDesign" className="p_light2">
+                        Designation
+                      </p>
+                      <select
+                        id="empDesign"
+                        value={values.empDesign}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        className="choose_designation need_width"
+                        // onChange={(e) => setRole(e.target.value)}
+                      >
+                        <option>Choose Designation</option>;
+                        {designation?.map((data) => {
+                          return (
+                            <option value={data._id}>{data.designation}</option>
+                          );
+                        })}
+                      </select>
+                      {errors.empDesign && touched.empDesign ? (
+                        <p className="error_mess_addemp">{errors.empDesign}</p>
+                      ) : null}
+                      <button
+                        // onClick={addingEmployee}
+
+                        type="submit"
+                        className="editemp_save_btn mt-3"
+                      >
+                        Add Employee
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
           </div>
+
           {/* add emp pop up  */}
         </div>
         {btnLoader === false ? (
           <table className="table tablebordered">
             <thead>
               <tr>
-                <th>Sl.No.</th>
+                <th style={{ paddingLeft: "35px" }}>Sl No</th>
                 <th>Employee Name</th>
                 <th>Employee ID</th>
                 <th>Team</th>
-                <th>Designation</th>
+                <th style={{ width: "15%" }}>Designation</th>
               </tr>
             </thead>
             <tbody>
-              {empDetails
-                .filter((item) => {
-                  return search.toLowerCase() === ""
-                    ? item
-                    : item.name.toLowerCase().includes(search);
-                })
-                .map((each_emp, index) => {
-                  return (
-                    <tr
-                      key={each_emp.id}
-                      data-bs-toggle="modal"
-                      data-bs-target="#display_emp_details"
-                      onClick={() => getIndEmp(each_emp._id)}
-                    >
-                      <td>{index + 1}</td>
-                      <td>{each_emp.name === "" ? "-" : each_emp.name}</td>
-                      <td className="emp_id">
-                        {each_emp.emp_id === "" ? "-" : each_emp.emp_id}
-                      </td>
-                      <td>
-                        {each_emp.department === "" ? "-" : each_emp.department}
-                      </td>
-                      <td>
-                        {each_emp.designation === ""
-                          ? "-"
-                          : each_emp.designation}
-                      </td>
-                    </tr>
-                  );
-                })}
+              {dataSource
+                ? dataSource.map((each_emp, index) => {
+                    return (
+                      <tr
+                        key={each_emp.id}
+                        data-bs-toggle="modal"
+                        data-bs-target="#display_emp_details"
+                        onClick={() => getIndEmp(each_emp._id)}
+                      >
+                        <td style={{ paddingLeft: "35px" }}>{index + 1}</td>
+                        <td>{each_emp.name === "" ? "-" : each_emp.name}</td>
+                        <td className="emp_id">
+                          {each_emp.emp_id === "" ? "-" : each_emp.emp_id}
+                        </td>
+                        <td>
+                          {each_emp.department === ""
+                            ? "-"
+                            : each_emp.department}
+                        </td>
+                        <td>
+                          {each_emp.designation === ""
+                            ? "-"
+                            : each_emp.designation}
+                        </td>
+                      </tr>
+                    );
+                  })
+                : empDetails.map((each_emp, index) => {
+                    return (
+                      <tr
+                        key={each_emp.id}
+                        data-bs-toggle="modal"
+                        data-bs-target="#display_emp_details"
+                        onClick={() => getIndEmp(each_emp._id)}
+                      >
+                        <td style={{ paddingLeft: "35px" }}>{index + 1}</td>
+                        <td>{each_emp.name === "" ? "-" : each_emp.name}</td>
+                        <td className="emp_id">
+                          {each_emp.emp_id === "" ? "-" : each_emp.emp_id}
+                        </td>
+                        <td>
+                          {each_emp.department === ""
+                            ? "-"
+                            : each_emp.department}
+                        </td>
+                        <td>
+                          {each_emp.designation === ""
+                            ? "-"
+                            : each_emp.designation}
+                        </td>
+                      </tr>
+                    );
+                  })}
             </tbody>
           </table>
         ) : (
+          // <Table
+          //   columns={columns}
+          //   dataSource={dataSource}
+          //   onRow={(record, rowIndex) => {
+          //     return {
+          //       onClick: () => {
+          //         getIndEmp(columns.record._id);
+          //       },
+          //     };
+          //   }}
+          // // onClick={() => getIndEmp(columns.each_emp._id)}
+          // pagination={{
+          //   pageSize: 10,
+
+          //   total: 300,
+          //   onChange: (page) => {
+          //     getAllEmployee(page);
+          //   },
+          //   }}
+          // ></Table>
+          // <table className="table tablebordered">
+          //   <thead>
+          //     <tr>
+          //       <th style={{ paddingLeft: "35px" }}>Sl No</th>
+          //       <th>Employee Name</th>
+          //       <th>Employee ID</th>
+          //       <th>Team</th>
+          //       <th style={{ width: "15%" }}>Designation</th>
+          //     </tr>
+          //   </thead>
+          //   <tbody>
+          //     {filteredEmpDetails.map((each_emp, index) => {
+          //       return (
+          //         <tr
+          //           key={each_emp.id}
+          //           data-bs-toggle="modal"
+          //           data-bs-target="#display_emp_details"
+          //           onClick={() => getIndEmp(each_emp._id)}
+          //         >
+          //           <td style={{ paddingLeft: "35px" }}>{index + 1}</td>
+          //           <td>{each_emp.name === "" ? "-" : each_emp.name}</td>
+          //           <td className="emp_id">
+          //             {each_emp.emp_id === "" ? "-" : each_emp.emp_id}
+          //           </td>
+          //           <td>
+          //             {each_emp.department === "" ? "-" : each_emp.department}
+          //           </td>
+          //           <td>
+          //             {each_emp.designation === "" ? "-" : each_emp.designation}
+          //           </td>
+          //         </tr>
+          //       );
+          //     })}
+          //   </tbody>
+          // </table>
           <div
             className="d-flex justify-content-center align-items-center"
             style={{
@@ -702,6 +867,26 @@ const Employees = (props) => {
           </div>
         </div>
         {/* delete emp detail pop up  */}
+      </div>
+      <div className="d-flex justify-content-end">
+        <Pagination
+          onChange={(page) => {
+            getAllEmployee(page);
+            setBtnLoader(true);
+          }}
+          // pageSize={PerPage}
+
+          total={30}
+          showTotal={(total, range) => (
+            <p>{`Showing ${range[0]} to ${range[1]} of ${total} Results`}</p>
+          )}
+          // current={parseInt()}
+          // // defaultCurrent={Page}
+          // // showSizeChanger={false}
+          // pageSizeOptions={[10, 20, 50, 100]}
+          // showSizeChanger
+          // // showQuickJumper
+        />
       </div>
     </div>
   );

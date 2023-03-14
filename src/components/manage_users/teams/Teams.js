@@ -4,9 +4,8 @@ import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 import Loading from "../../../re_use/Loading";
-const Teams = (props) => {
-  const base_url = props.base_url;
-  const headers = props.headers;
+import axiosInterceptor from "../../../helpers/axiosInterceptor";
+const Teams = () => {
   const [teamId, setTeamId] = useState("");
   const [teamDetail, setteamDetail] = useState("");
   const [currentTeam, setCurrentTeam] = useState("");
@@ -17,14 +16,10 @@ const Teams = (props) => {
   const [search, setSearch] = useState("");
   // get all department api
   const fetchAllDepartment = async () => {
-    axios
-      .get(`${base_url}/get-all-department`, {
-        headers,
-      })
-      .then((res) => {
-        setDepartment(res.data.result);
-        setBtnLoader(false);
-      });
+    axiosInterceptor.get(`/get-all-department`).then((res) => {
+      setDepartment(res.data.result);
+      setBtnLoader(false);
+    });
   };
 
   useEffect(() => {
@@ -33,46 +28,36 @@ const Teams = (props) => {
 
   //add a new department api
   const addNewTeam = async () => {
-    axios.post(
-      `${base_url}/add-department`,
-      { department: tosendTeam },
-      {
-        headers,
-      }
-    );
-    setBtnLoader(false);
-    setTosendTeam("");
-    toast.success("Department added!");
-    fetchAllDepartment();
+    axiosInterceptor
+      .post(`/add-department`, { department: tosendTeam })
+      .then((res) => {
+        setBtnLoader(false);
+        setTosendTeam("");
+        toast.success(res.data.message);
+        fetchAllDepartment();
+      });
   };
   // update current department api
   const updateTeam = async () => {
-    let response = await axios.put(
-      `${base_url}/update-department?department_id=${teamId}`,
-      { department: currentTeam },
-      {
-        headers,
-      }
-    );
-    setBtnLoader(false);
-    let result = await response.data;
-    fetchAllDepartment();
+    axiosInterceptor
+      .put(`/update-department?department_id=${teamId}`, {
+        department: currentTeam,
+      })
+      .then((res) => {
+        setBtnLoader(false);
+        fetchAllDepartment();
+        toast.success(res.data.message);
+      });
   };
   // Delete department api
   const deleteTeam = async () => {
-    let response = await axios.delete(
-      `${base_url}/delete-department?department_id=${teamId}`,
-
-      {
-        headers,
-      }
-    );
-    setBtnLoader(false);
-    fetchAllDepartment();
-    let result = response.result;
-    if (result) {
-    }
-    toast.success("Department Deleted");
+    axiosInterceptor
+      .delete(`/delete-department?department_id=${teamId}`)
+      .then((res) => {
+        setBtnLoader(false);
+        fetchAllDepartment();
+        toast.success(res.data.message);
+      });
   };
   return (
     <div>
@@ -152,7 +137,9 @@ const Teams = (props) => {
         <table className="table tablebordered">
           <thead>
             <tr>
-              <th className="col-2">Sl.No.</th>
+              <th style={{ paddingLeft: "35px" }} className="col-2">
+                Sl.No.
+              </th>
               <th>Team Name</th>
             </tr>
           </thead>
@@ -175,7 +162,7 @@ const Teams = (props) => {
                       );
                     }}
                   >
-                    <td>{index + 1}</td>
+                    <td style={{ paddingLeft: "35px" }}>{index + 1}</td>
                     <td>{item.department === "" ? "-" : item.department}</td>
                   </tr>
                 );

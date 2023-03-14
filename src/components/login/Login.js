@@ -3,81 +3,89 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import login_logo from "../../assets/svgs/svg_1.svg";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
-import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import axiosInterceptor from "../../helpers/axiosInterceptor";
 import Loading from "../../re_use/Loading";
-
+import { useFormik } from "formik";
+import { logInSchema } from "../../schemas/validation";
+// action .resetForm()
 const Login = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const initialValues = {
+    email: "",
+    password: "",
+  };
   const [btnLoader, setBtnLoader] = useState(false);
 
-  const base_url = process.env.REACT_APP_BASE_URL;
+  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
+    useFormik({
+      initialValues: initialValues,
+      validationSchema: logInSchema,
+      onSubmit: (values) => {
+        setBtnLoader(true);
+        axiosInterceptor
+          .post(`/login-user`, {
+            email: values.email,
+            password: values.password,
+          })
+          .then((res) => {
+            localStorage.setItem("token", res.data.result.token);
 
-  const headers = {
-    "Content-Type": "application/json;charset=utf-8",
-    authtoken: "Y3VzdG9tdG9rZW50b3Byb3RlY3RhcGlyb3V0ZXM=",
-    usertype: "admin",
-  };
+            let status = res.status;
 
-  const handleLogin = (e) => {
-    setBtnLoader(true);
-    e.preventDefault();
-    axios
-      .post(
-        `${base_url}/login-user`,
-        {
-          email: email,
-          password: password,
-        },
-        {
-          headers,
-        }
-      )
-      .then((response) => {
-        localStorage.setItem("token", response.data.result.token);
-
-        let status = response.status;
-
-        if (status === 200) {
-          navigate("/dashboard");
-          setBtnLoader(false);
-          toast.success("Login Successfull");
-        } else {
-          setBtnLoader(false);
-          toast.error("Login Failed");
-        }
-      });
-  };
-
+            if (status === 200) {
+              navigate("/dashboard");
+              setBtnLoader(false);
+            } else {
+              setBtnLoader(false);
+              toast.error(res.data.message);
+            }
+          })
+          .catch((error) => {
+            setBtnLoader(false);
+            toast.error(error.data.message);
+          });
+      },
+    });
   return (
     <div className="d-flex login_container">
       <div className="login_left"></div>
       <div className="login_right">
         <img src={login_logo} className="login_logo" alt="login_logo" />
-        <form className="login_form" onSubmit={handleLogin}>
+        <form className="login_form" onSubmit={handleSubmit}>
           <h2> Login to your account </h2>
           <div className="input_form">
             <div className="input_details">
-              <label htmlFor="username" className="login_label">
+              <label htmlFor="email" className="login_label">
                 Email
               </label>
               <input
-                type="text"
-                id="username"
-                onChange={(e) => setEmail(e.target.value)}
+                type="email"
+                id="email"
+                name="email"
+                value={values.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
               />
+              {errors.email && touched.email ? (
+                <p className="mt-2 error_mess ">{errors.email}</p>
+              ) : null}
             </div>
             <div className="input_details">
-              <label htmlFor="pass" className="login_label">
+              <label htmlFor="password" className="login_label">
                 Password
               </label>
               <input
                 type="password"
-                id="pass"
-                onChange={(e) => setPassword(e.target.value)}
+                id="password"
+                name="password"
+                value={values.password}
+                onChange={handleChange}
+                onBlur={handleBlur}
               />
+              {errors.password && touched.password ? (
+                <p className="mt-2 error_mess">{errors.password}</p>
+              ) : null}
             </div>
             <button type="submit" className="login_btn">
               {btnLoader === true ? <Loading /> : ""}
@@ -87,7 +95,6 @@ const Login = () => {
           </div>
         </form>
       </div>
-      <ToastContainer />
     </div>
   );
 };

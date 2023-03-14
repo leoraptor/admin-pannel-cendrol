@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../re_use/side_bar/Sidebar";
-import { useNavigate } from "react-router-dom";
 import "../people.css";
 import Sidebar_header from "../../re_use/Sidebar_header";
+
 
 const Dashboard = () => {
   return (

@@ -1,14 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import side_bar_logo from "../../assets/svgs/svg_2.svg";
 import { useNavigate } from "react-router-dom";
-
+import side_bar_logo from "../../assets/svgs/svg_2.svg";
 import "../../components/people.css";
 const Sidebar = () => {
   const navigate = useNavigate();
   const goback = () => {
     navigate("/dashboard");
   };
+  const [token, setToken] = useState(localStorage.getItem("token"));
+
+  useEffect(() => {
+    const tokenFromStorage = localStorage.getItem("token");
+    if (!tokenFromStorage) {
+      navigate.push("/");
+    } else if (token !== tokenFromStorage) {
+      localStorage.clear();
+      navigate.push("/");
+    }
+  }, [token]);
   return (
     <div className="side_bar">
       <img

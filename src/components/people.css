@@ -120,12 +120,22 @@
   flex-direction: column;
   align-items: start;
   justify-content: center;
+  font-family: "Inter";
+  font-style: normal;
 }
-
+.error_mess {
+  font-size: 14px;
+  font-weight: 400;
+  font-family: "Inter";
+  font-style: normal;
+  color: #ff0000;
+}
 .login_form input {
   height: 50px;
   width: 100%;
   outline: none;
+  font-family: "Inter";
+  font-style: normal;
   border-radius: 5px;
   border-color: #e8e8e8;
   border-style: solid;
@@ -136,6 +146,8 @@
   font-size: 14px;
   font-weight: 400;
   line-height: 16px;
+  font-family: "Inter";
+  font-style: normal;
 }
 
 .login_btn {
@@ -147,7 +159,8 @@
   border: none;
   font-size: 16px;
   font-weight: 600;
-  line-height: 16px;
+  font-family: "Inter";
+  font-style: normal;
   margin-top: 31px;
   vertical-align: middle;
   display: flex;
@@ -332,38 +345,6 @@
   top: 35%;
   left: 1%;
 }
-.tablebordered {
-  margin-top: 16px;
-  border: 1px solid var(--border_clr);
-}
-table thead tr {
-  background: var(--border_clr);
-  height: 44px;
-}
-table thead tr th {
-  vertical-align: middle;
-  border-bottom: none;
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 500;
-  font-size: 13px;
-
-  color: #000;
-}
-table tbody tr td {
-  vertical-align: middle;
-  height: 44px;
-  color: var(--placeholder_text);
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 13px;
-}
-table tbody :hover {
-  cursor: pointer;
-  background: var(--grey_bg);
-}
-
 /* employee modal  */
 .modal-title {
   font-family: 600 !important;
@@ -526,7 +507,7 @@ table tbody :hover {
   color: #0e0e0e;
   background: #ffdb63;
   border-radius: 2px 0px 0px 2px;
-  padding: 13px 10px;
+  padding: 12px 10px;
 }
 .input_feild_number {
   background: var(--grey_bg);
@@ -727,11 +708,15 @@ option {
   padding: 12px;
   border: none;
   outline: none;
-  margin-bottom: 14px;
   font-family: "Inter";
   font-style: normal;
   font-weight: 400;
   font-size: 13px;
+}
+.show_icon {
+  position: absolute;
+  top: 135px;
+  right: 30px;
 }
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -746,14 +731,32 @@ input::-webkit-inner-spin-button {
   outline: none;
   width: 144px;
   height: 40px;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  margin-top: 10px;
+}
+.addemp_pop_up .error_mess_addemp {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  color: red;
+  padding: 0;
+  margin: 0;
+}
+.addemp_pop_up .modal-footer .error_mess_addemp {
+  color: red;
+}
+.addemp_pop_up .numer_91 {
+  margin-top: 10px;
 }
 .addemp_pop_up .modal-body .container .row .input_feild_number::placeholder {
   color: var(--placeholder_text);
   font-family: "Inter";
   font-style: normal;
   font-weight: 400;
-  font-size: 13px;
-  line-height: 16px;
+  font-size: 12px;
 }
 .addemp_pop_up select {
   width: 188px;
@@ -767,6 +770,7 @@ input::-webkit-inner-spin-button {
   font-weight: 400;
   font-size: 13px;
   padding-left: 12px;
+  margin-top: 10px;
 }
 .addemp_pop_up option {
   font-family: "Inter";
@@ -779,7 +783,7 @@ input::-webkit-inner-spin-button {
 }
 .addemp_pop_up .modal-footer {
   border-top: none;
-  padding: 0px 16px;
+  padding: 0;
 }
 .addemp_pop_up .modal-footer p {
   font-family: "Inter";
@@ -963,7 +967,7 @@ input::-webkit-inner-spin-button {
 }
 .emp_input_box {
   height: 38px;
-  width: 70%;
+  width: 55%;
   padding-left: 38px;
   background: var(--grey_bg);
   border-radius: 1px;
@@ -1007,8 +1011,137 @@ input::-webkit-inner-spin-button {
 .nav .nav-item a {
   background: var(--grey_bg);
 }
+/* pagination styles starts here  */
+.ant-pagination .ant-pagination-item a {
+  border: none;
+}
+.ant-pagination li {
+  border: none;
+}
+:where(.css-dev-only-do-not-override-ph9edi).ant-pagination
+  .ant-pagination-item {
+  border: 1px solid var(--border_clr);
+  border-radius: 0;
+}
+:where(.css-dev-only-do-not-override-ph9edi).ant-pagination
+  .ant-pagination-item-active {
+  background: var(--nonLinearGradient_btn);
+  border: none;
+  border-radius: 0;
+}
+/* antd table style over ride  */
+
+.tablebordered {
+  margin-top: 16px;
+  border: 1px solid var(--border_clr);
+}
+table thead tr {
+  background: var(--border_clr);
+  height: 44px;
+}
+table thead tr th {
+  vertical-align: middle;
+  border-bottom: none;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 13px;
+
+  color: #000;
+}
+table tbody tr td {
+  vertical-align: middle;
+  height: 44px;
+  color: var(--placeholder_text);
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+}
+table tbody :hover {
+  cursor: pointer;
+  background: var(--grey_bg);
+}
+.ant-table-content {
+  margin-top: 16px;
+  border: 1px solid var(--border_clr);
+}
+.ant-table .ant-table-container .ant-table-content .ant-table-thead tr {
+  height: 44px;
+}
+.ant-table
+  .ant-table-container
+  .ant-table-content
+  .ant-table-thead
+  .ant-table-cell {
+  vertical-align: middle;
+  border-bottom: none;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 13px;
+  color: #000;
+  background: var(--border_clr);
+  border-radius: 0;
+  padding: 0px 10px;
+}
+:where(.css-dev-only-do-not-override-ph9edi).ant-table-wrapper
+  .ant-table-thead
+  > tr
+  > th:not(:last-child):not(.ant-table-selection-column):not(
+    .ant-table-row-expand-icon-cell
+  ):not([colspan])::before,
+:where(.css-dev-only-do-not-override-ph9edi).ant-table-wrapper
+  .ant-table-thead
+  > tr
+  > td:not(:last-child):not(.ant-table-selection-column):not(
+    .ant-table-row-expand-icon-cell
+  ):not([colspan])::before {
+  display: none;
+}
+.ant-table
+  .ant-table-container
+  .ant-table-content
+  .ant-table-body
+  .ant-table-row
+  .ant-table-cell {
+  vertical-align: middle;
+  height: 44px;
+  color: var(--placeholder_text);
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+}
+.pagination li {
+  height: 20px;
+  margin-right: 20px;
+  background: #d51414;
+}
+:where(.css-dev-only-do-not-override-ph9edi).ant-pagination
+  .ant-pagination-total-text {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  color: #646464;
+}
+.input_search {
+  height: 38px;
+  border: none;
+  background: linear-gradient(90.11deg, #ffdb6c -9.01%, #f7b314 127.45%);
+  border-radius: 1px;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  width: 110px;
+}
 @media screen and (max-width: 1024px) {
   .emp_input_box {
-    width: 54%;
+    width: 44%;
+  }
+  .input_search {
+    width: 60px;
   }
 }
