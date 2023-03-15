@@ -5,31 +5,31 @@ import slogo from "../../assets/svgs/svg_4.svg";
 import "../people.css";
 import axios from "axios";
 const Attendance = () => {
-  const base_url = process.env.REACT_APP_BASE_URL;
-  const headers = {
-    Authorization: "Bearer " + localStorage.getItem("token"),
-    "Content-type": "application/json;charset=utf-8",
-    authtoken: "Y3VzdG9tdG9rZW50b3Byb3RlY3RhcGlyb3V0ZXM=",
-    usertype: "admin",
-  };
+  // const base_url = process.env.REACT_APP_BASE_URL;
+  // const headers = {
+  //   Authorization: "Bearer " + localStorage.getItem("token"),
+  //   "Content-type": "application/json;charset=utf-8",
+  //   authtoken: "Y3VzdG9tdG9rZW50b3Byb3RlY3RhcGlyb3V0ZXM=",
+  //   usertype: "admin",
+  // };
 
-  const EmployeeCheckin = () => {
-    axios
-      .get(
-        `${base_url}/employee-checkin`,
+  // const EmployeeCheckin = () => {
+  //   axios
+  //     .get(
+  //       `${base_url}/employee-checkin`,
 
-        {
-          headers,
-        }
-      )
-      .then((res) => {
-        console.log(res);
-      });
-  };
+  //       {
+  //         headers,
+  //       }
+  //     )
+  //     .then((res) => {
+  //       console.log(res);
+  //     });
+  // };
 
-  useEffect(() => {
-    EmployeeCheckin();
-  });
+  // useEffect(() => {
+  //   EmployeeCheckin();
+  // });
   return (
     <div className="d-flex ">
       <Sidebar />

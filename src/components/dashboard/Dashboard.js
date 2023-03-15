@@ -3,8 +3,14 @@ import Sidebar from "../../re_use/side_bar/Sidebar";
 import "../people.css";
 import Sidebar_header from "../../re_use/Sidebar_header";
 
-
 const Dashboard = () => {
+  useEffect(() => {
+    const myToken = localStorage.getItem("token");
+
+    if (myToken === null) {
+      window.location.href = "/";
+    }
+  }, []);
   return (
     <div className="d-flex ">
       <Sidebar />

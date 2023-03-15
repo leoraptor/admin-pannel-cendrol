@@ -2,13 +2,12 @@ import "../people.css";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import login_logo from "../../assets/svgs/svg_1.svg";
-import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axiosInterceptor from "../../helpers/axiosInterceptor";
 import Loading from "../../re_use/Loading";
 import { useFormik } from "formik";
 import { logInSchema } from "../../schemas/validation";
-// action .resetForm()
 const Login = () => {
   const navigate = useNavigate();
   const initialValues = {
@@ -30,20 +29,15 @@ const Login = () => {
           })
           .then((res) => {
             localStorage.setItem("token", res.data.result.token);
-
             let status = res.status;
-
             if (status === 200) {
               navigate("/dashboard");
               setBtnLoader(false);
-            } else {
-              setBtnLoader(false);
-              toast.error(res.data.message);
             }
           })
           .catch((error) => {
             setBtnLoader(false);
-            toast.error(error.data.message);
+            toast.error(error.response.data.message);
           });
       },
     });
@@ -89,12 +83,12 @@ const Login = () => {
             </div>
             <button type="submit" className="login_btn">
               {btnLoader === true ? <Loading /> : ""}
-
               <p className="mb-0 mx-4">Login now</p>
             </button>
           </div>
         </form>
       </div>
+      <ToastContainer />
     </div>
   );
 };

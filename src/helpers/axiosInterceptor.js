@@ -20,6 +20,30 @@ axiosInterceptor.interceptors.request.use(
   }
 );
 
+const errorHandler = async (error) => {
+  const status = error.response ? error.response.status : null;
+  const refereshToken = localStorage.getItem("token");
+
+  if (refereshToken === null || status === 401) {
+    window.location.href = "/";
+  }
+  // else if (status === 401) {
+  //   // will loop if refreshToken returns 401
+  //   try {
+  //     const response = await axios.post(`${SERVER_URL}/refreshtoken`, {
+  //       refreshToken: refereshToken,
+  //     });
+  //     localStorage.setItem("token", response.data.token);
+  //     error.response.config.headers["x-auth-token"] = response.data.token;
+  //     return await axiosClientInterceptors(error.response.config);
+  //   } catch (err) {
+  //     window.location.href = "/";
+  //   }
+  // }
+
+  return Promise.reject(error);
+};
+
 axiosInterceptor.interceptors.response.use(
   (response) => {
     return response;

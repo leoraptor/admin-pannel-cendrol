@@ -967,7 +967,7 @@ input::-webkit-inner-spin-button {
 }
 .emp_input_box {
   height: 38px;
-  width: 55%;
+  width: 85%;
   padding-left: 38px;
   background: var(--grey_bg);
   border-radius: 1px;
@@ -977,6 +977,29 @@ input::-webkit-inner-spin-button {
   font-style: normal;
   font-weight: 400;
   font-size: 13px;
+}
+.emp_input_box_designation {
+  height: 38px;
+  width: 70%;
+  padding-left: 38px;
+  background: var(--grey_bg);
+  border-radius: 1px;
+  border: none;
+  outline: none;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+}
+.input_width {
+  width: 72%;
+  position: relative;
+}
+.clear_search {
+  position: absolute;
+  top: 5px;
+  left: 82%;
+  cursor: pointer;
 }
 .download_btn {
   background: var(--light_btn);
@@ -1136,12 +1159,20 @@ table tbody :hover {
   font-weight: 500;
   font-size: 12px;
   width: 110px;
+  padding-top: 2px;
 }
+
 @media screen and (max-width: 1024px) {
+  .emp_input_box_designation {
+    width: 50%;
+  }
   .emp_input_box {
-    width: 44%;
+    width: 85%;
   }
   .input_search {
-    width: 60px;
+    width: 50px;
+  }
+  .input_width {
+    width: 50%;
   }
 }

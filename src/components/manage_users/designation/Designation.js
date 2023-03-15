@@ -1,32 +1,30 @@
 import React, { useEffect, useState } from "react";
-import CloseIcon from "../../../re_use/CloseIcon";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import Loading from "../../../re_use/Loading";
 import axiosInterceptor from "../../../helpers/axiosInterceptor";
+import ClearIcon from "@mui/icons-material/Clear";
 
 const Designation = () => {
   const [designation, setDesignation] = useState([]);
-  const [totalDesignation, setTotalDesignation] = useState();
-  const [tableDesignation, setTableDesignation] = useState();
-  const [tableDesigType, setTableDesigType] = useState();
+  const [tableDesignation, setTableDesignation] = useState("");
+  const [tableDesigType, setTableDesigType] = useState("");
   const [currentDesignation, setCurrentDesignation] = useState("");
   const [toSendDesignation, setToSendDesignation] = useState("");
   const [btnLoader, setBtnLoader] = useState(true);
   const [search, setSearch] = useState("");
   // get all designation api
-  const fetchAllDesignation = async () => {
-    axiosInterceptor.get(`/get-all-designation`).then((res) => {
-      setBtnLoader(false);
-
-      setDesignation(res.data.result);
-      setTotalDesignation(res.data.result.length);
-    });
+  const fetchAllDesignation = () => {
+    axiosInterceptor
+      .get(`/get-all-designation`)
+      .then((res) => {
+        setBtnLoader(false);
+        setDesignation(res.data.result);
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
   };
-
-  useEffect(() => {
-    fetchAllDesignation();
-  }, []);
 
   //add new designation api
   const addNewDesignation = () => {
@@ -35,10 +33,15 @@ const Designation = () => {
         designation: toSendDesignation,
       })
       .then((res) => {
-        setBtnLoader(false);
-        fetchAllDesignation();
-        setToSendDesignation("");
-        toast.success(res.data.message);
+        if (res.data.success) {
+          setBtnLoader(false);
+          fetchAllDesignation();
+          setToSendDesignation("");
+          toast.success(res.data.message);
+        }
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
       });
   };
 
@@ -49,10 +52,15 @@ const Designation = () => {
         designation: currentDesignation,
       })
       .then((res) => {
-        setBtnLoader(false);
-        fetchAllDesignation();
-        setTableDesigType("");
-        toast.success(res.data.message);
+        if (res.data.success) {
+          setBtnLoader(false);
+          fetchAllDesignation();
+          setTableDesigType("");
+          toast.success(res.data.message);
+        }
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
       });
   };
 
@@ -61,16 +69,25 @@ const Designation = () => {
     axiosInterceptor
       .delete(`/delete-designation?designation_id=${tableDesignation}`)
       .then((res) => {
-        setBtnLoader(false);
-        fetchAllDesignation();
-        toast.success(res.data.message);
+        if (res.data.success) {
+          setBtnLoader(false);
+          fetchAllDesignation();
+          toast.success(res.data.message);
+        }
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
       });
   };
+
+  useEffect(() => {
+    fetchAllDesignation();
+  }, []);
   return (
     <>
       <div className="tab_content">
         <p className="mt-2 margin-bottom-0">
-          Designation &#40;{totalDesignation}&#41;
+          Designation &#40;{designation.length}&#41;
         </p>
         <div className="emp_input">
           <svg
@@ -99,7 +116,7 @@ const Designation = () => {
             />
           </svg>
           <input
-            className="emp_input_box"
+            className="emp_input_box_designation"
             placeholder="Search by Designation"
             onChange={(e) => setSearch(e.target.value.toLowerCase())}
           />
@@ -205,7 +222,14 @@ const Designation = () => {
           <div className="modal-content">
             <div className="modal-header">
               <p>Designation Details</p>
-              <CloseIcon />
+              <button
+                type="button"
+                className="border-0 bg_none"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              >
+                <ClearIcon />
+              </button>
             </div>
             <div className="modal-body">
               <p>Designation Name</p>
@@ -335,7 +359,14 @@ const Designation = () => {
           <div className="modal-content">
             <div className="modal-header">
               <p>Designation Details</p>
-              <CloseIcon />
+              <button
+                type="button"
+                className="border-0 bg_none"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              >
+                <ClearIcon />
+              </button>
             </div>
             <div className="modal-body">
               <h6>Designation Name</h6>
@@ -371,7 +402,14 @@ const Designation = () => {
           <div className="modal-content">
             <div className="modal-header">
               <p>Add Designation</p>
-              <CloseIcon />
+              <button
+                type="button"
+                className="border-0 bg_none"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              >
+                <ClearIcon />
+              </button>
             </div>
             <div className="modal-body">
               <h6>Designation Name</h6>

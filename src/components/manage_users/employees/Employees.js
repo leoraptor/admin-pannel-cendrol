@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import CloseIcon from "../../../re_use/CloseIcon";
+import React, { useState, useEffect, useRef } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import Loading from "../../../re_use/Loading";
@@ -7,13 +6,11 @@ import axiosInterceptor from "../../../helpers/axiosInterceptor";
 import { useFormik } from "formik";
 import { addEmpSchema } from "../../../schemas/validation";
 import { Pagination } from "antd";
-import ShowIcon from "../../../re_use/ShowIcon";
+import ClearIcon from "@mui/icons-material/Clear";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 const Employees = () => {
-  const [department, setDepartment] = useState([]);
-  const [dataSource, setDataSource] = useState(null);
-  const [page, setPage] = useState(1);
-
+  const inputRef = useRef(null);
   const initialValuesOfAddNewEmp = {
     empName: "",
     empEmail: "",
@@ -23,23 +20,19 @@ const Employees = () => {
     empDept: "",
     empDesign: "",
   };
-  //all designation data
-  const [designation, setDesignation] = useState([]);
-
-  //all employee data
+  //all designation data and employee data
   const [empDetails, setEmpDetails] = useState([]);
+  const [department, setDepartment] = useState([]);
+  const [designation, setDesignation] = useState([]);
+  const [totalEmp, setTotalEmp] = useState("");
+  const [btnLoader, setBtnLoader] = useState(true);
+  const [search, setSearch] = useState("");
 
-  const [totalEmp, setTotalEmp] = useState();
-  console.log(totalEmp);
-  const [totalPages, setTotalPages] = useState();
-  // console.log(totalPages);
-  //tab section
-  const [activeTab, setActiveTab] = useState("tab1");
   // individual emp id from table row state
-  const [individualEmp, setIndividualEmp] = useState();
+  const [individualEmp, setIndividualEmp] = useState("");
 
   //edit existing emp details
-  const [tabelF, setTableF] = useState();
+  const [tabelF, setTableF] = useState("");
   const [newName, setNewName] = useState(individualEmp?.name);
 
   const [newEmpId, setNewEmpId] = useState(individualEmp?.email);
@@ -50,7 +43,6 @@ const Employees = () => {
   const [newDesignation, setNewDesignation] = useState(
     individualEmp?.designation
   );
-
   const initialValuesEditEmp = {
     newName: individualEmp?.name,
     newEmpId: individualEmp?.email,
@@ -60,31 +52,28 @@ const Employees = () => {
     newTeam: individualEmp?.department,
     newDesignation: individualEmp?.designation,
   };
-  const [btnLoader, setBtnLoader] = useState(true);
-  const [search, setSearch] = useState("");
+
   const fetchAllDepartment = () => {
     axiosInterceptor.get(`/get-all-department`).then((res) => {
-      return setDepartment(res.data.result);
+      setDepartment(res.data.result);
     });
   };
   const fetchAllDesignation = () => {
     axiosInterceptor.get(`/get-all-designation`).then((res) => {
-      return setDesignation(res.data.result);
+      setDesignation(res.data.result);
     });
   };
 
   const getAllEmployee = (page) => {
     axiosInterceptor
       .get(`/get-all-employee?page=${page}&limit=10&search=`)
-      .then((res) => {
-        return (
-          console.log(res),
+      .then(
+        (res) => (
           setEmpDetails(res.data.result.listOfEmployee),
           setTotalEmp(res.data.result.totalEmployee),
-          setBtnLoader(false),
-          setTotalPages(res.data.result.numberOfPage)
-        );
-      });
+          setBtnLoader(false)
+        )
+      );
   };
   const getIndEmp = (i) => {
     let emp_id = i;
@@ -108,9 +97,15 @@ const Employees = () => {
         designation: newDesignation,
       })
       .then((res) => {
-        getIndEmp();
-        getAllEmployee(1);
-        toast.success(res.data.message);
+        if (res.data.success) {
+          getIndEmp();
+          getAllEmployee(1);
+          toast.success(res.data.message);
+          console.log(res);
+        }
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
       });
   };
 
@@ -122,26 +117,6 @@ const Employees = () => {
         toast.success(res.data.message);
       });
   };
-  useEffect(() => {
-    // axiosInterceptor
-    //   .get(`/get-all-employee?page=1&limit=10&search=ghhtro`)
-    //   .then((res) => {
-    //     console.log(res);
-    //   });
-
-    getAllEmployee(page);
-    fetchAllDepartment();
-    fetchAllDesignation();
-  }, []);
-
-  const filteredEmpDetails = !search
-    ? dataSource
-    : dataSource.filter(
-        (person) =>
-          person.name.toLowerCase().includes(search.toLowerCase()) ||
-          person.emp_id.toLowerCase().includes(search.toLowerCase()) ||
-          person.designation.toLowerCase().includes(search.toLowerCase())
-      );
 
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
@@ -173,9 +148,23 @@ const Employees = () => {
     axiosInterceptor
       .get(`/get-all-employee?page=1&limit=10&search=${search}`)
       .then((res) => {
-        setDataSource(res.data.result.listOfEmployee);
+        setEmpDetails(res.data.result.listOfEmployee);
+      })
+      .catch((error) => {
+        console.log(error);
       });
   };
+
+  const clearSearch = () => {
+    setSearch("");
+    getAllEmployee(1);
+    inputRef.current.value = "";
+  };
+  useEffect(() => {
+    getAllEmployee(1);
+    fetchAllDepartment();
+    fetchAllDesignation();
+  }, []);
   return (
     <div>
       <div className="tab_content">
@@ -206,15 +195,22 @@ const Employees = () => {
               stroke-linejoin="round"
             />
           </svg>
-
-          <input
-            className="emp_input_box"
-            placeholder="Search by name, Designation, employee ID"
-            onChange={(e) => setSearch(e.target.value.toLowerCase())}
-          />
-          <button className="input_search" onClick={searchEmp}>
-            Search
-          </button>
+          <div className=" flex-row input_width">
+            <input
+              className="emp_input_box"
+              placeholder="Search by name, Designation, employee ID"
+              onChange={(e) => setSearch(e.target.value)}
+              ref={inputRef}
+            />
+            {search && (
+              <div className="clear_search" onClick={clearSearch}>
+                <ClearIcon sx={{ color: "#646464" }} />
+              </div>
+            )}
+            <button className="input_search" onClick={searchEmp}>
+              Search
+            </button>
+          </div>
 
           <button className="download_btn">
             Download Report
@@ -255,7 +251,6 @@ const Employees = () => {
             Add Employee
           </button>
           {/* add emp pop up  */}
-
           <div
             className={`modal fade addemp_pop_up }`}
             id="addemp_pop_up"
@@ -275,18 +270,7 @@ const Employees = () => {
                     data-bs-dismiss="modal"
                     aria-label="Close"
                   >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 18 18"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M2.46659 17.1666L0.833252 15.5333L7.36659 8.99992L0.833252 2.46659L2.46659 0.833252L8.99992 7.36659L15.5333 0.833252L17.1666 2.46659L10.6333 8.99992L17.1666 15.5333L15.5333 17.1666L8.99992 10.6333L2.46659 17.1666Z"
-                        fill="black"
-                      />
-                    </svg>
+                    <ClearIcon />
                   </button>
                 </div>
                 <div className="modal-body">
@@ -306,11 +290,11 @@ const Employees = () => {
                             onChange={handleChange}
                             onBlur={handleBlur}
                           />
-                          {errors.empName && touched.empName ? (
+                          {errors.empName && touched.empName && (
                             <p className="mt-2 error_mess_addemp">
                               {errors.empName}
                             </p>
-                          ) : null}
+                          )}
                           <label htmlFor="empEmail" className="p_light_d">
                             User ID
                           </label>
@@ -323,12 +307,11 @@ const Employees = () => {
                             onChange={handleChange}
                             onBlur={handleBlur}
                           />
-
-                          {errors.empEmail && touched.empEmail ? (
+                          {errors.empEmail && touched.empEmail && (
                             <p className="mt-2 error_mess_addemp">
                               {errors.empEmail}
                             </p>
-                          ) : null}
+                          )}
                           <label htmlFor="empMobile" className="p_light_d">
                             Mobile Number
                           </label>
@@ -351,11 +334,11 @@ const Employees = () => {
                               onBlur={handleBlur}
                             />
                           </div>
-                          {errors.empMobile && touched.empMobile ? (
+                          {errors.empMobile && touched.empMobile && (
                             <p className="mt-2 error_mess_addemp">
                               {errors.empMobile}
                             </p>
-                          ) : null}
+                          )}
                         </div>
                         <div className="col">
                           <label htmlFor="empId" className="p_light_d">
@@ -368,13 +351,12 @@ const Employees = () => {
                             value={values.empId}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            // onChange={(e) => setEmpId(e.target.value)}
                           />
-                          {errors.empId && touched.empId ? (
+                          {errors.empId && touched.empId && (
                             <p className="mt-2 error_mess_addemp">
                               {errors.empId}
                             </p>
-                          ) : null}
+                          )}
                           <label htmlFor="empPassword" className="p_light_d">
                             Password
                           </label>
@@ -386,14 +368,13 @@ const Employees = () => {
                             placeholder="Password"
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            // onChange={(e) => setPassword(e.target.value)}
                           />
-                          <ShowIcon />
-                          {errors.password && touched.password ? (
+
+                          {errors.password && touched.password && (
                             <p className="mt-2 error_mess_addemp">
                               {errors.password}
                             </p>
-                          ) : null}
+                          )}
                           <label htmlFor="empDept" className="p_light_d">
                             Team
                           </label>
@@ -402,7 +383,6 @@ const Employees = () => {
                             value={values.empDept}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            // onChange={(e) => setDept(e.target.value)}
                           >
                             <option>Choose team</option>
                             {department?.map((data) => {
@@ -413,11 +393,11 @@ const Employees = () => {
                               );
                             })}
                           </select>
-                          {errors.empDept && touched.empDept ? (
+                          {errors.empDept && touched.empDept && (
                             <p className=" error_mess_addemp">
                               {errors.empDept}
                             </p>
-                          ) : null}
+                          )}
                         </div>
                       </div>
                     </div>
@@ -431,7 +411,6 @@ const Employees = () => {
                         onChange={handleChange}
                         onBlur={handleBlur}
                         className="choose_designation need_width"
-                        // onChange={(e) => setRole(e.target.value)}
                       >
                         <option>Choose Designation</option>;
                         {designation?.map((data) => {
@@ -440,15 +419,10 @@ const Employees = () => {
                           );
                         })}
                       </select>
-                      {errors.empDesign && touched.empDesign ? (
+                      {errors.empDesign && touched.empDesign && (
                         <p className="error_mess_addemp">{errors.empDesign}</p>
-                      ) : null}
-                      <button
-                        // onClick={addingEmployee}
-
-                        type="submit"
-                        className="editemp_save_btn mt-3"
-                      >
+                      )}
+                      <button type="submit" className="editemp_save_btn mt-3">
                         Add Employee
                       </button>
                     </div>
@@ -472,117 +446,31 @@ const Employees = () => {
               </tr>
             </thead>
             <tbody>
-              {dataSource
-                ? dataSource.map((each_emp, index) => {
-                    return (
-                      <tr
-                        key={each_emp.id}
-                        data-bs-toggle="modal"
-                        data-bs-target="#display_emp_details"
-                        onClick={() => getIndEmp(each_emp._id)}
-                      >
-                        <td style={{ paddingLeft: "35px" }}>{index + 1}</td>
-                        <td>{each_emp.name === "" ? "-" : each_emp.name}</td>
-                        <td className="emp_id">
-                          {each_emp.emp_id === "" ? "-" : each_emp.emp_id}
-                        </td>
-                        <td>
-                          {each_emp.department === ""
-                            ? "-"
-                            : each_emp.department}
-                        </td>
-                        <td>
-                          {each_emp.designation === ""
-                            ? "-"
-                            : each_emp.designation}
-                        </td>
-                      </tr>
-                    );
-                  })
-                : empDetails.map((each_emp, index) => {
-                    return (
-                      <tr
-                        key={each_emp.id}
-                        data-bs-toggle="modal"
-                        data-bs-target="#display_emp_details"
-                        onClick={() => getIndEmp(each_emp._id)}
-                      >
-                        <td style={{ paddingLeft: "35px" }}>{index + 1}</td>
-                        <td>{each_emp.name === "" ? "-" : each_emp.name}</td>
-                        <td className="emp_id">
-                          {each_emp.emp_id === "" ? "-" : each_emp.emp_id}
-                        </td>
-                        <td>
-                          {each_emp.department === ""
-                            ? "-"
-                            : each_emp.department}
-                        </td>
-                        <td>
-                          {each_emp.designation === ""
-                            ? "-"
-                            : each_emp.designation}
-                        </td>
-                      </tr>
-                    );
-                  })}
+              {empDetails.map((each_emp, index) => {
+                return (
+                  <tr
+                    key={each_emp.id}
+                    data-bs-toggle="modal"
+                    data-bs-target="#display_emp_details"
+                    onClick={() => getIndEmp(each_emp._id)}
+                  >
+                    <td style={{ paddingLeft: "35px" }}>{index + 1}</td>
+                    <td>{each_emp.name === "" ? "-" : each_emp.name}</td>
+                    <td className="emp_id">
+                      {each_emp.emp_id === "" ? "-" : each_emp.emp_id}
+                    </td>
+                    <td>
+                      {each_emp.department === "" ? "-" : each_emp.department}
+                    </td>
+                    <td>
+                      {each_emp.designation === "" ? "-" : each_emp.designation}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         ) : (
-          // <Table
-          //   columns={columns}
-          //   dataSource={dataSource}
-          //   onRow={(record, rowIndex) => {
-          //     return {
-          //       onClick: () => {
-          //         getIndEmp(columns.record._id);
-          //       },
-          //     };
-          //   }}
-          // // onClick={() => getIndEmp(columns.each_emp._id)}
-          // pagination={{
-          //   pageSize: 10,
-
-          //   total: 300,
-          //   onChange: (page) => {
-          //     getAllEmployee(page);
-          //   },
-          //   }}
-          // ></Table>
-          // <table className="table tablebordered">
-          //   <thead>
-          //     <tr>
-          //       <th style={{ paddingLeft: "35px" }}>Sl No</th>
-          //       <th>Employee Name</th>
-          //       <th>Employee ID</th>
-          //       <th>Team</th>
-          //       <th style={{ width: "15%" }}>Designation</th>
-          //     </tr>
-          //   </thead>
-          //   <tbody>
-          //     {filteredEmpDetails.map((each_emp, index) => {
-          //       return (
-          //         <tr
-          //           key={each_emp.id}
-          //           data-bs-toggle="modal"
-          //           data-bs-target="#display_emp_details"
-          //           onClick={() => getIndEmp(each_emp._id)}
-          //         >
-          //           <td style={{ paddingLeft: "35px" }}>{index + 1}</td>
-          //           <td>{each_emp.name === "" ? "-" : each_emp.name}</td>
-          //           <td className="emp_id">
-          //             {each_emp.emp_id === "" ? "-" : each_emp.emp_id}
-          //           </td>
-          //           <td>
-          //             {each_emp.department === "" ? "-" : each_emp.department}
-          //           </td>
-          //           <td>
-          //             {each_emp.designation === "" ? "-" : each_emp.designation}
-          //           </td>
-          //         </tr>
-          //       );
-          //     })}
-          //   </tbody>
-          // </table>
           <div
             className="d-flex justify-content-center align-items-center"
             style={{
@@ -592,7 +480,6 @@ const Employees = () => {
             <Loading />
           </div>
         )}
-
         {/* emp display details in ui pop up  */}
         <div
           className="modal fade display_emp"
@@ -605,8 +492,14 @@ const Employees = () => {
             <div className="modal-content">
               <div className="modal-header">
                 <h1>Employee Details</h1>
-
-                <CloseIcon />
+                <button
+                  type="button"
+                  className="border-0 bg_none"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <ClearIcon />
+                </button>
               </div>
               <div className="modal-body">
                 <div className="container">
@@ -631,7 +524,6 @@ const Employees = () => {
                         <p className="p_light_c">{individualEmp?.emp_id}</p>
                         <p className="p_light_d">Password</p>
                         <p className="p_light_c">{individualEmp?.password}</p>
-
                         <p className="p_light_d">Team</p>
                         <p className="p_light_c">{individualEmp?.department}</p>
                       </div>
@@ -708,7 +600,14 @@ const Employees = () => {
             <div className="modal-content">
               <div className="modal-header">
                 <h2>Edit Details</h2>
-                <CloseIcon />
+                <button
+                  type="button"
+                  className="border-0 bg_none"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <ClearIcon />
+                </button>
               </div>
               <div className="modal-body">
                 <div className="edit_inputs">
@@ -745,7 +644,6 @@ const Employees = () => {
                     </div>
                   </div>
                   <div className="edit_inputs_right">
-                    {" "}
                     <label htmlFor="Full_name" className="p_light">
                       Employee ID
                     </label>
@@ -767,7 +665,6 @@ const Employees = () => {
                     />
                     <label className="p_light">Team</label>
                     <select
-                      id="sel1"
                       defaultValue={individualEmp?.department}
                       onChange={(e) => setNewTeam(e.target.value)}
                     >
@@ -874,18 +771,10 @@ const Employees = () => {
             getAllEmployee(page);
             setBtnLoader(true);
           }}
-          // pageSize={PerPage}
-
           total={30}
           showTotal={(total, range) => (
             <p>{`Showing ${range[0]} to ${range[1]} of ${total} Results`}</p>
           )}
-          // current={parseInt()}
-          // // defaultCurrent={Page}
-          // // showSizeChanger={false}
-          // pageSizeOptions={[10, 20, 50, 100]}
-          // showSizeChanger
-          // // showQuickJumper
         />
       </div>
     </div>

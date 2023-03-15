@@ -1,33 +1,27 @@
 import React, { useEffect, useState } from "react";
-import CloseIcon from "../../../re_use/CloseIcon";
-import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import Loading from "../../../re_use/Loading";
 import axiosInterceptor from "../../../helpers/axiosInterceptor";
+import ClearIcon from "@mui/icons-material/Clear";
 const Teams = () => {
   const [teamId, setTeamId] = useState("");
   const [teamDetail, setteamDetail] = useState("");
   const [currentTeam, setCurrentTeam] = useState("");
   const [tosendTeam, setTosendTeam] = useState("");
   const [department, setDepartment] = useState([]);
-  let totalTeam = department.length;
   const [btnLoader, setBtnLoader] = useState(true);
   const [search, setSearch] = useState("");
   // get all department api
-  const fetchAllDepartment = async () => {
+  const fetchAllDepartment = () => {
     axiosInterceptor.get(`/get-all-department`).then((res) => {
       setDepartment(res.data.result);
       setBtnLoader(false);
     });
   };
 
-  useEffect(() => {
-    fetchAllDepartment();
-  }, []);
-
   //add a new department api
-  const addNewTeam = async () => {
+  const addNewTeam = () => {
     axiosInterceptor
       .post(`/add-department`, { department: tosendTeam })
       .then((res) => {
@@ -38,7 +32,7 @@ const Teams = () => {
       });
   };
   // update current department api
-  const updateTeam = async () => {
+  const updateTeam = () => {
     axiosInterceptor
       .put(`/update-department?department_id=${teamId}`, {
         department: currentTeam,
@@ -50,7 +44,7 @@ const Teams = () => {
       });
   };
   // Delete department api
-  const deleteTeam = async () => {
+  const deleteTeam = () => {
     axiosInterceptor
       .delete(`/delete-department?department_id=${teamId}`)
       .then((res) => {
@@ -59,10 +53,16 @@ const Teams = () => {
         toast.success(res.data.message);
       });
   };
+
+  useEffect(() => {
+    fetchAllDepartment();
+  }, []);
   return (
     <div>
       <div className="tab_content">
-        <p className="mt-2 margin-bottom-0">Teams &#40;{totalTeam}&#41;</p>
+        <p className="mt-2 margin-bottom-0">
+          Teams &#40;{department.length}&#41;
+        </p>
         <div className="emp_input">
           <svg
             className="emp_slogo"
@@ -90,7 +90,7 @@ const Teams = () => {
             />
           </svg>
           <input
-            className="emp_input_box"
+            className="emp_input_box_designation"
             placeholder="Search by team name"
             onChange={(e) => setSearch(e.target.value.toLowerCase())}
           />
@@ -193,7 +193,14 @@ const Teams = () => {
           <div className="modal-content">
             <div className="modal-header">
               <p>Team Details</p>
-              <CloseIcon />
+              <button
+                type="button"
+                className="border-0 bg_none"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              >
+                <ClearIcon />
+              </button>
             </div>
             <div className="modal-body">
               <p>Team Name</p>
@@ -268,7 +275,14 @@ const Teams = () => {
           <div className="modal-content">
             <div className="modal-header">
               <p>Edit Team Details</p>
-              <CloseIcon />
+              <button
+                type="button"
+                className="border-0 bg_none"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              >
+                <ClearIcon />
+              </button>
             </div>
             <div className="modal-body">
               <h6>Team Name</h6>
@@ -304,7 +318,14 @@ const Teams = () => {
           <div className="modal-content">
             <div className="modal-header">
               <p>Add Team</p>
-              <CloseIcon />
+              <button
+                type="button"
+                className="border-0 bg_none"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              >
+                <ClearIcon />
+              </button>
             </div>
             <div className="modal-body">
               <h6>Team Name</h6>

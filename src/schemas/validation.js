@@ -6,10 +6,21 @@ export const logInSchema = Yup.object({
 });
 
 export const addEmpSchema = Yup.object({
-  empName: Yup.string().min(2).required("Please Enter Name"),
-  empId: Yup.string().min(2).required("Enter Empployee Id"),
-  empEmail: Yup.string().email().required("Enter Email"),
-  empMobile: Yup.number().min(9).required("Enter Mobile Number"),
+  empName: Yup.string()
+    .min(3, "Name must be at least 2 characters")
+    .required("Please Enter Name"),
+  empId: Yup.string()
+    .min(3, "Id must be at least 2 characters")
+    .required("Enter Employee Id"),
+  empEmail: Yup.string()
+    .email("Email must be a valid Email")
+    .required("Enter Email"),
+  empMobile: Yup.string()
+    .matches(
+      /^[0-9]{10}$/,
+      "Mobile number must be 10 digits with no decimal points"
+    )
+    .required("Enter Mobile Number"),
   password: Yup.string().min(6).required("Enter password"),
   empDept: Yup.string().required("Select Department"),
   empDesign: Yup.string().required("Select Designation"),
