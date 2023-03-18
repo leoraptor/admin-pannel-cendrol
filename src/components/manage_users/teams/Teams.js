@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
-import Loading from "../../../re_use/Loading";
 import axiosInterceptor from "../../../helpers/axiosInterceptor";
 import ClearIcon from "@mui/icons-material/Clear";
+import { ErrorMessage, Field, Form, Formik, useFormik } from "formik";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
+import {
+  addNewTeamSchema,
+  updateTeamSchema,
+} from "../../../schemas/validation";
+
 const Teams = () => {
   const [teamId, setTeamId] = useState("");
   const [teamDetail, setteamDetail] = useState("");
-  const [currentTeam, setCurrentTeam] = useState("");
-  const [tosendTeam, setTosendTeam] = useState("");
   const [department, setDepartment] = useState([]);
   const [btnLoader, setBtnLoader] = useState(true);
   const [search, setSearch] = useState("");
@@ -19,31 +24,25 @@ const Teams = () => {
       setBtnLoader(false);
     });
   };
-
-  //add a new department api
-  const addNewTeam = () => {
-    axiosInterceptor
-      .post(`/add-department`, { department: tosendTeam })
-      .then((res) => {
-        setBtnLoader(false);
-        setTosendTeam("");
-        toast.success(res.data.message);
-        fetchAllDepartment();
-      });
-  };
-  // update current department api
-  const updateTeam = () => {
-    axiosInterceptor
-      .put(`/update-department?department_id=${teamId}`, {
-        department: currentTeam,
-      })
-      .then((res) => {
-        setBtnLoader(false);
-        fetchAllDepartment();
-        toast.success(res.data.message);
-      });
-  };
-  // Delete department api
+  const form1 = useFormik({
+    initialValues: {
+      tosendTeam: "",
+    },
+    validationSchema: addNewTeamSchema,
+    onSubmit: (values, { resetForm }) => {
+      axiosInterceptor
+        .post(`/add-department`, { department: values.tosendTeam })
+        .then((res) => {
+          setBtnLoader(false);
+          toast.success(res.data.message);
+          fetchAllDepartment();
+          resetForm();
+        })
+        .catch((error) => {
+          toast.error(error.response.data.message);
+        });
+    },
+  });
   const deleteTeam = () => {
     axiosInterceptor
       .delete(`/delete-department?department_id=${teamId}`)
@@ -65,7 +64,7 @@ const Teams = () => {
         </p>
         <div className="emp_input">
           <svg
-            className="emp_slogo"
+            className="emp_tlogo"
             width="16"
             height="17"
             viewBox="0 0 16 17"
@@ -134,41 +133,43 @@ const Teams = () => {
         </div>
       </div>
       {btnLoader === false ? (
-        <table className="table tablebordered">
-          <thead>
-            <tr>
-              <th style={{ paddingLeft: "35px" }} className="col-2">
-                Sl.No.
-              </th>
-              <th>Team Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {department
-              .filter((data) => {
-                return search.toLowerCase() === ""
-                  ? data
-                  : data.department.toLowerCase().includes(search);
-              })
-              .map((item, index) => {
-                return (
-                  <tr
-                    key={item.id}
-                    data-bs-toggle="modal"
-                    data-bs-target="#display_team"
-                    onClick={() => {
-                      return (
-                        setTeamId(item._id), setteamDetail(item.department)
-                      );
-                    }}
-                  >
-                    <td style={{ paddingLeft: "35px" }}>{index + 1}</td>
-                    <td>{item.department === "" ? "-" : item.department}</td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
+        <div className="table_cover">
+          <table className="table tablebordered">
+            <thead>
+              <tr>
+                <th style={{ paddingLeft: "35px" }} className="col-2">
+                  Sl.No.
+                </th>
+                <th>Team Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              {department
+                .filter((data) => {
+                  return search.toLowerCase() === ""
+                    ? data
+                    : data.department.toLowerCase().includes(search);
+                })
+                .map((item, index) => {
+                  return (
+                    <tr
+                      key={item.id}
+                      data-bs-toggle="modal"
+                      data-bs-target="#display_team"
+                      onClick={() => {
+                        return (
+                          setTeamId(item._id), setteamDetail(item.department)
+                        );
+                      }}
+                    >
+                      <td style={{ paddingLeft: "35px" }}>{index + 1}</td>
+                      <td>{item.department === "" ? "-" : item.department}</td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <div
           className="d-flex justify-content-evenly align-items-center"
@@ -176,7 +177,9 @@ const Teams = () => {
             height: "50vh",
           }}
         >
-          <Loading />
+          <Box sx={{ display: "flex" }}>
+            <CircularProgress />
+          </Box>
         </div>
       )}
 
@@ -285,21 +288,43 @@ const Teams = () => {
               </button>
             </div>
             <div className="modal-body">
-              <h6>Team Name</h6>
-              <input
-                className="input_feild_designation"
-                placeholder="Sales & Marketing"
-                defaultValue={teamDetail}
-                onChange={(e) => setCurrentTeam(e.target.value)}
-              />
-              <button
-                onClick={updateTeam}
-                data-bs-dismiss="modal"
-                type="button"
-                className="save_new_designation_btn"
+              <Formik
+                enableReinitialize={true}
+                initialValues={{
+                  currentTeam: teamDetail,
+                }}
+                validationSchema={updateTeamSchema(teamDetail)}
+                onSubmit={(values) => {
+                  axiosInterceptor
+                    .post(`/add-department`, { department: values.currentTeam })
+                    .then((res) => {
+                      setBtnLoader(false);
+                      toast.success(res.data.message);
+                      fetchAllDepartment();
+                    })
+                    .catch((error) => {
+                      toast.error(error.response.data.message);
+                    });
+                }}
+                validateOnBlur={false}
+                validateOnChange={false}
               >
-                Save Details
-              </button>
+                <Form>
+                  <lable htmlFor="currentTeam">Team Name</lable>
+                  <Field
+                    className="input_feild_designation"
+                    placeholder="Sales & Marketing"
+                    defaultValue={teamDetail}
+                    name="currentTeam"
+                  />
+                  <p className="error_mess_addemp mb-3">
+                    <ErrorMessage style={{ color: "red" }} name="currentTeam" />
+                  </p>
+                  <button type="submit" className="save_new_designation_btn">
+                    Save Details
+                  </button>
+                </Form>
+              </Formik>
             </div>
           </div>
         </div>
@@ -315,36 +340,38 @@ const Teams = () => {
         aria-hidden="true"
       >
         <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-              <p>Add Team</p>
-              <button
-                type="button"
-                className="border-0 bg_none"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              >
-                <ClearIcon />
-              </button>
+          <form onSubmit={form1.handleSubmit}>
+            <div className="modal-content">
+              <div className="modal-header">
+                <p>Add Team</p>
+                <button
+                  type="button"
+                  className="border-0 bg_none"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <ClearIcon />
+                </button>
+              </div>
+              <div className="modal-body">
+                <h6>Team Name</h6>
+                <input
+                  className="input_feild_designation"
+                  placeholder="eg. Legacy Manager"
+                  id="tosendTeam"
+                  value={form1.values.tosendTeam}
+                  onChange={form1.handleChange}
+                  onBlur={form1.handleBlur}
+                />
+                {form1.errors.tosendTeam && form1.touched.tosendTeam && (
+                  <p style={{ color: "red" }}>{form1.errors.tosendTeam}</p>
+                )}
+                <button type="submit" className="save_new_designation_btn">
+                  Add Team
+                </button>
+              </div>
             </div>
-            <div className="modal-body">
-              <h6>Team Name</h6>
-              <input
-                className="input_feild_designation"
-                placeholder="eg. Legacy Manager"
-                value={tosendTeam}
-                onChange={(e) => setTosendTeam(e.target.value)}
-              />
-              <button
-                data-bs-dismiss="modal"
-                type="button"
-                className="save_new_designation_btn"
-                onClick={addNewTeam}
-              >
-                Add Team
-              </button>
-            </div>
-          </div>
+          </form>
         </div>
       </div>
       {/* delete department pop up  */}

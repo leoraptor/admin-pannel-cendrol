@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;800;900&display=swap");
-
+/* @import "node_modules/ol/ol.css"; */
 :root {
   --placeholder_text: #646464;
   --nonLinearGradient_btn: #f7b314;
@@ -38,7 +38,7 @@
   align-items: center;
   width: 100%;
   padding: 16px;
-  height: 72px;
+  height: 60px;
   border-bottom: 1px solid var(--border_clr);
   font-weight: 600;
   font-size: 20px;
@@ -237,11 +237,7 @@
 /* side_bar css ends here  */
 
 /* table css starts here  */
-.table_container {
-  border: 1px solid var(--border_clr);
-  background: #ffffff;
-  margin-top: 20px;
-}
+
 .btn_logout {
   display: flex;
   height: 42px;
@@ -289,15 +285,15 @@
 /* change border radius for the tab , apply corners on top*/
 
 .tab_container {
-  margin: 24px;
-  padding: 24px;
+  margin: 12px;
+  padding: 12px;
   background: #ffffff;
 }
 #tab-section .nav-link {
   border: 0 !important;
   border-radius: 0 !important;
   margin-right: 10px;
-  margin-bottom: 24px;
+  margin-bottom: 5px;
 }
 #tab-section .nav-tabs .nav-link:hover {
   border: none;
@@ -344,6 +340,18 @@
   z-index: 5;
   top: 35%;
   left: 1%;
+}
+.emp_dlogo {
+  position: absolute;
+  z-index: 5;
+  top: 21.5%;
+  left: 3%;
+}
+.emp_tlogo {
+  position: absolute;
+  z-index: 5;
+  top: 32.5%;
+  left: 3%;
 }
 /* employee modal  */
 .modal-title {
@@ -699,6 +707,9 @@ option {
 .addemp_pop_up .modal-body .container {
   padding: 4px;
 }
+.row {
+  padding-left: 0;
+}
 .addemp_pop_up .modal-body .container .row .add_emp_input {
   width: 188px;
   height: 40px;
@@ -712,11 +723,13 @@ option {
   font-style: normal;
   font-weight: 400;
   font-size: 13px;
+  position: relative;
 }
-.show_icon {
+.visibilityIcon {
   position: absolute;
-  top: 135px;
+  top: 34%;
   right: 30px;
+  cursor: pointer;
 }
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -738,6 +751,25 @@ input::-webkit-inner-spin-button {
   margin-top: 10px;
 }
 .addemp_pop_up .error_mess_addemp {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  color: red;
+  padding: 0;
+  margin: 0;
+}
+.input_row {
+  padding-right: 0;
+}
+.change_emp .error_mess_addemp {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  color: red;
+  padding: 0;
+  margin: 0;
+}
+.displaydesignation .modal-body .error_mess_addemp {
   font-style: normal;
   font-weight: 400;
   font-size: 13px;
@@ -960,14 +992,11 @@ input::-webkit-inner-spin-button {
 
 /* search input styles  */
 .emp_input {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
+  width: 100%;
 }
 .emp_input_box {
   height: 38px;
-  width: 85%;
+  width: 90%;
   padding-left: 38px;
   background: var(--grey_bg);
   border-radius: 1px;
@@ -977,10 +1006,12 @@ input::-webkit-inner-spin-button {
   font-style: normal;
   font-weight: 400;
   font-size: 13px;
+  position: relative;
 }
+
 .emp_input_box_designation {
   height: 38px;
-  width: 70%;
+  width: 72%;
   padding-left: 38px;
   background: var(--grey_bg);
   border-radius: 1px;
@@ -990,24 +1021,30 @@ input::-webkit-inner-spin-button {
   font-style: normal;
   font-weight: 400;
   font-size: 13px;
-}
-.input_width {
-  width: 72%;
-  position: relative;
+  margin-right: 22px;
 }
 .clear_search {
   position: absolute;
-  top: 5px;
-  left: 82%;
+  top: 6px;
+  left: 89%;
   cursor: pointer;
+}
+.nodata {
+  height: 60vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 24px;
 }
 .download_btn {
   background: var(--light_btn);
   border: none;
   font-size: 13px;
   font-weight: 500;
-  padding: 10px;
+  padding-left: 10px;
   height: 38px;
+  margin-right: 20px;
 }
 .add_emp_btn {
   background: linear-gradient(
@@ -1024,8 +1061,11 @@ input::-webkit-inner-spin-button {
 }
 .emp_input .emp_slogo {
   position: absolute;
-  top: 30%;
-  left: 14px;
+  top: 26%;
+  left: 24px;
+}
+.input_row {
+  position: relative;
 }
 .loading {
   height: 20px;
@@ -1055,12 +1095,12 @@ input::-webkit-inner-spin-button {
 /* antd table style over ride  */
 
 .tablebordered {
-  margin-top: 16px;
+  margin-top: 10px;
   border: 1px solid var(--border_clr);
 }
 table thead tr {
   background: var(--border_clr);
-  height: 44px;
+  height: 43px;
 }
 table thead tr th {
   vertical-align: middle;
@@ -1072,17 +1112,20 @@ table thead tr th {
 
   color: #000;
 }
+
 table tbody tr td {
   vertical-align: middle;
-  height: 44px;
+  height: 43.2px;
   color: var(--placeholder_text);
   font-family: "Inter";
   font-style: normal;
   font-weight: 400;
   font-size: 13px;
 }
-table tbody :hover {
+
+table tbody tr:hover {
   cursor: pointer;
+
   background: var(--grey_bg);
 }
 .ant-table-content {
@@ -1158,12 +1201,23 @@ table tbody :hover {
   font-style: normal;
   font-weight: 500;
   font-size: 12px;
-  width: 110px;
+  width: 8%;
   padding-top: 2px;
 }
-
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+.ol-control.ol-bar.ol-bottom.ol-right {
+  bottom: 1.5em;
+}
+.zoom {
+  margin-top: 12px !important;
+}
 @media screen and (max-width: 1024px) {
-  .emp_input_box_designation {
+  /* .emp_input_box_designation {
     width: 50%;
   }
   .emp_input_box {
@@ -1174,5 +1228,5 @@ table tbody :hover {
   }
   .input_width {
     width: 50%;
-  }
+  } */
 }

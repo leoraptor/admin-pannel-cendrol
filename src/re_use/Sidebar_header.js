@@ -20,15 +20,22 @@ const Sidebar_header = () => {
         onClick={handleShow}
         classNameName="logout_logo"
         style={{ cursor: "pointer" }}
+        data-bs-toggle="modal"
+        data-bs-target="#logout"
+        data-bs-dismiss="modal"
+        tabindex="-1"
+        aria-labelledby="btn_logout"
+        aria-hidden="true"
       />
       <div className={logdata ? "showit" : "hideit"}>
-        <div
+        {/* <div
           className="btn_logout"
-          data-bs-toggle="modal"
-          data-bs-target="#logout"
-          data-bs-dismiss="modal"
+          
         >
           <svg
+            tabindex="-1"
+            aria-labelledby="btn_logout"
+            aria-hidden="true"
             width="14"
             height="14"
             viewBox="0 0 14 14"
@@ -41,16 +48,16 @@ const Sidebar_header = () => {
             />
           </svg>
           Logout
-        </div>
+        </div> */}
       </div>
       {/* logout pop up  */}
       <div
         className="modal fade change_emp"
         id="logout"
         data-bs-backdrop="static"
-        data-bs-keyboard="false"
+        data-bs-keyboard="true"
         tabindex="-1"
-        aria-labelledby="staticBackdropLabel"
+        aria-labelledby="exampleModalLabel"
         aria-hidden="true"
       >
         <div className="modal-dialog modal-dialog-centered">

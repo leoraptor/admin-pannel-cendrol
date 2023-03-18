@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
-import Loading from "../../../re_use/Loading";
 import axiosInterceptor from "../../../helpers/axiosInterceptor";
 import ClearIcon from "@mui/icons-material/Clear";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
+import {
+  addDesignationSchema,
+  updateNewDesignationSchema,
+} from "../../../schemas/validation";
+import { ErrorMessage, Field, Form, Formik, useFormik } from "formik";
 
 const Designation = () => {
   const [designation, setDesignation] = useState([]);
   const [tableDesignation, setTableDesignation] = useState("");
   const [tableDesigType, setTableDesigType] = useState("");
-  const [currentDesignation, setCurrentDesignation] = useState("");
-  const [toSendDesignation, setToSendDesignation] = useState("");
   const [btnLoader, setBtnLoader] = useState(true);
   const [search, setSearch] = useState("");
   // get all designation api
@@ -27,42 +31,54 @@ const Designation = () => {
   };
 
   //add new designation api
-  const addNewDesignation = () => {
-    axiosInterceptor
-      .post(`/add-designation`, {
-        designation: toSendDesignation,
-      })
-      .then((res) => {
-        if (res.data.success) {
-          setBtnLoader(false);
-          fetchAllDesignation();
-          setToSendDesignation("");
-          toast.success(res.data.message);
-        }
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message);
-      });
-  };
-
+  const form1 = useFormik({
+    initialValues: {
+      toSendDesignation: "",
+    },
+    validationSchema: addDesignationSchema,
+    onSubmit: (values, { resetForm }) => {
+      axiosInterceptor
+        .post(`/add-designation`, {
+          designation: values.toSendDesignation,
+        })
+        .then((res) => {
+          if (res.data.success) {
+            setBtnLoader(false);
+            fetchAllDesignation();
+            toast.success(res.data.message);
+            resetForm();
+          }
+        })
+        .catch((error) => {
+          toast.error(error.response.data.message);
+        });
+    },
+  });
   //update designatin api
-  const updateDesignation = () => {
-    axiosInterceptor
-      .put(`/update-designation?designation_id=${tableDesignation}`, {
-        designation: currentDesignation,
-      })
-      .then((res) => {
-        if (res.data.success) {
-          setBtnLoader(false);
-          fetchAllDesignation();
-          setTableDesigType("");
-          toast.success(res.data.message);
-        }
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message);
-      });
-  };
+  // const form2 = useFormik({
+  //   initialValues: {
+  //     currentDesignation: tableDesigType,
+  //   },
+  //   validationSchema: updateNewDesignationSchema,
+  //   onSubmit: (values, { resetForm }) => {
+  //     axiosInterceptor
+  //       .put(`/update-designation?designation_id=${tableDesignation}`, {
+  //         designation: values.currentDesignation,
+  //       })
+  //       .then((res) => {
+  //         if (res.data.success) {
+  //           setBtnLoader(false);
+  //           fetchAllDesignation();
+  //           setTableDesigType("");
+  //           resetForm();
+  //           toast.success(res.data.message);
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         toast.error(error.response.data.message);
+  //       });
+  //   },
+  // });
 
   //delete designation api
   const deleteDesignation = () => {
@@ -91,7 +107,7 @@ const Designation = () => {
         </p>
         <div className="emp_input">
           <svg
-            className="emp_slogo"
+            className="emp_dlogo"
             width="16"
             height="17"
             viewBox="0 0 16 17"
@@ -160,43 +176,47 @@ const Designation = () => {
         </div>
       </div>
       {btnLoader === false ? (
-        <table className="table tablebordered" pagination={{ pageSize: 10 }}>
-          <thead>
-            <tr>
-              <th style={{ paddingLeft: "35px" }} className="col-2">
-                Sl.No.
-              </th>
-              <th>Designation</th>
-            </tr>
-          </thead>
-          <tbody>
-            {designation
-              .filter((data) => {
-                return search.toLowerCase() === ""
-                  ? data
-                  : data.designation.toLowerCase().includes(search);
-              })
-              .map((item, index) => {
-                return (
-                  <tr
-                    pageSize={10}
-                    key={item.id}
-                    data-bs-toggle="modal"
-                    data-bs-target="#display_designation"
-                    onClick={(e) => {
-                      return (
-                        setTableDesignation(item._id),
-                        setTableDesigType(e.target.innerText)
-                      );
-                    }}
-                  >
-                    <td style={{ paddingLeft: "35px" }}>{index + 1}</td>
-                    <td>{item.designation === "" ? "-" : item.designation}</td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
+        <div>
+          <table className="table tablebordered" pagination={{ pageSize: 10 }}>
+            <thead>
+              <tr>
+                <th style={{ paddingLeft: "35px" }} className="col-2">
+                  Sl.No.
+                </th>
+                <th>Designation</th>
+              </tr>
+            </thead>
+            <tbody>
+              {designation
+                .filter((data) => {
+                  return search.toLowerCase() === ""
+                    ? data
+                    : data.designation.toLowerCase().includes(search);
+                })
+                .map((item, index) => {
+                  return (
+                    <tr
+                      pageSize={10}
+                      key={item.id}
+                      data-bs-toggle="modal"
+                      data-bs-target="#display_designation"
+                      onClick={(e) => {
+                        return (
+                          setTableDesignation(item._id),
+                          setTableDesigType(e.target.innerText)
+                        );
+                      }}
+                    >
+                      <td style={{ paddingLeft: "35px" }}>{index + 1}</td>
+                      <td>
+                        {item.designation === "" ? "-" : item.designation}
+                      </td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <div
           className="d-flex justify-content-center align-items-center"
@@ -204,7 +224,9 @@ const Designation = () => {
             height: "50vh",
           }}
         >
-          <Loading />
+          <Box sx={{ display: "flex" }}>
+            <CircularProgress />
+          </Box>
         </div>
       )}
 
@@ -369,21 +391,55 @@ const Designation = () => {
               </button>
             </div>
             <div className="modal-body">
-              <h6>Designation Name</h6>
-              <input
-                className="input_feild_designation"
-                placeholder="eg. Legacy Manager"
-                defaultValue={tableDesigType}
-                onChange={(e) => setCurrentDesignation(e.target.value)}
-              />
-              <button
-                onClick={updateDesignation}
-                data-bs-dismiss="modal"
-                type="button"
-                className="save_new_designation_btn"
+              <Formik
+                enableReinitialize={true}
+                initialValues={{
+                  currentDesignation: tableDesigType,
+                }}
+                validationSchema={updateNewDesignationSchema(tableDesigType)}
+                onSubmit={(values) => {
+                  axiosInterceptor
+                    .put(
+                      `/update-designation?designation_id=${tableDesignation}`,
+                      {
+                        designation: values.currentDesignation,
+                      }
+                    )
+                    .then((res) => {
+                      if (res.data.success) {
+                        setBtnLoader(false);
+                        fetchAllDesignation();
+                        setTableDesigType("");
+
+                        toast.success(res.data.message);
+                      }
+                    })
+                    .catch((error) => {
+                      toast.error(error.response.data.message);
+                    });
+                }}
+                validateOnBlur={false}
+                validateOnChange={false}
               >
-                Save Details
-              </button>
+                <Form>
+                  <label htmlFor="currentDesignation">Designation Name</label>
+                  <Field
+                    className="input_feild_designation"
+                    placeholder="eg. Legacy Manager"
+                    defaultValue={tableDesigType}
+                    name="currentDesignation"
+                  />
+                  <p className="error_mess_addemp mb-3">
+                    <ErrorMessage
+                      style={{ color: "red" }}
+                      name="currentDesignation"
+                    />
+                  </p>
+                  <button type="submit" className="save_new_designation_btn">
+                    Save Details
+                  </button>
+                </Form>
+              </Formik>
             </div>
           </div>
         </div>
@@ -411,23 +467,28 @@ const Designation = () => {
                 <ClearIcon />
               </button>
             </div>
-            <div className="modal-body">
-              <h6>Designation Name</h6>
-              <input
-                className="input_feild_designation"
-                placeholder="eg. Legacy Manager"
-                value={toSendDesignation}
-                onChange={(e) => setToSendDesignation(e.target.value)}
-              />
-              <button
-                data-bs-dismiss="modal"
-                type="button"
-                className="save_new_designation_btn"
-                onClick={addNewDesignation}
-              >
-                Add Designation
-              </button>
-            </div>
+            <form onSubmit={form1.handleSubmit}>
+              <div className="modal-body">
+                <h2 htmlFor="toSendDesignation">Designation Name</h2>
+                <input
+                  className="input_feild_designation"
+                  placeholder="eg. Legacy Manager"
+                  id="toSendDesignation"
+                  value={form1.values.toSendDesignation}
+                  onChange={form1.handleChange}
+                  onBlur={form1.handleBlur}
+                />
+                {form1.errors.toSendDesignation &&
+                  form1.touched.toSendDesignation && (
+                    <p style={{ color: "red" }}>
+                      {form1.errors.toSendDesignation}
+                    </p>
+                  )}
+                <button type="submit" className="save_new_designation_btn">
+                  Add Designation
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>

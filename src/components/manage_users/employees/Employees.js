@@ -1,16 +1,31 @@
 import React, { useState, useEffect, useRef } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
-import Loading from "../../../re_use/Loading";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 import axiosInterceptor from "../../../helpers/axiosInterceptor";
-import { useFormik } from "formik";
-import { addEmpSchema } from "../../../schemas/validation";
+import { Formik, useFormik, Form, Field, ErrorMessage } from "formik";
+import { addEmpSchema, editEmpSchema } from "../../../schemas/validation";
 import { Pagination } from "antd";
 import ClearIcon from "@mui/icons-material/Clear";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import NoData from "../../../re_use/NoData";
 
 const Employees = () => {
   const inputRef = useRef(null);
+  const [empDetails, setEmpDetails] = useState([]);
+  const [department, setDepartment] = useState([]);
+  const [designation, setDesignation] = useState([]);
+  const [totalEmp, setTotalEmp] = useState("");
+  const [btnLoader, setBtnLoader] = useState(true);
+  const [search, setSearch] = useState("");
+  const [visble, setVisble] = useState(false);
+  const [trackPage, setTrackPage] = useState({});
+  // individual emp id from table row state
+  const [individualEmp, setIndividualEmp] = useState("");
+  const [tabelF, setTableF] = useState("");
+
   const initialValuesOfAddNewEmp = {
     empName: "",
     empEmail: "",
@@ -20,44 +35,21 @@ const Employees = () => {
     empDept: "",
     empDesign: "",
   };
-  //all designation data and employee data
-  const [empDetails, setEmpDetails] = useState([]);
-  const [department, setDepartment] = useState([]);
-  const [designation, setDesignation] = useState([]);
-  const [totalEmp, setTotalEmp] = useState("");
-  const [btnLoader, setBtnLoader] = useState(true);
-  const [search, setSearch] = useState("");
 
-  // individual emp id from table row state
-  const [individualEmp, setIndividualEmp] = useState("");
+  const departmentId = department.find(
+    (d) => d.department === individualEmp?.department
+  )?._id;
 
-  //edit existing emp details
-  const [tabelF, setTableF] = useState("");
-  const [newName, setNewName] = useState(individualEmp?.name);
-
-  const [newEmpId, setNewEmpId] = useState(individualEmp?.email);
-  const [newUserId, setNewUserId] = useState(individualEmp?.emp_id);
-  const [newPass, setNewPass] = useState(individualEmp?.password);
-  const [newMob, setNewMob] = useState(individualEmp?.mobile);
-  const [newTeam, setNewTeam] = useState(individualEmp?.department);
-  const [newDesignation, setNewDesignation] = useState(
-    individualEmp?.designation
-  );
-  const initialValuesEditEmp = {
-    newName: individualEmp?.name,
-    newEmpId: individualEmp?.email,
-    newUserId: individualEmp?.emp_id,
-    newPass: individualEmp?.password,
-    newMob: individualEmp?.mobile,
-    newTeam: individualEmp?.department,
-    newDesignation: individualEmp?.designation,
-  };
+  const designationId = designation.find(
+    (d) => d.designation === individualEmp?.designation
+  )?._id;
 
   const fetchAllDepartment = () => {
     axiosInterceptor.get(`/get-all-department`).then((res) => {
       setDepartment(res.data.result);
     });
   };
+
   const fetchAllDesignation = () => {
     axiosInterceptor.get(`/get-all-designation`).then((res) => {
       setDesignation(res.data.result);
@@ -71,7 +63,8 @@ const Employees = () => {
         (res) => (
           setEmpDetails(res.data.result.listOfEmployee),
           setTotalEmp(res.data.result.totalEmployee),
-          setBtnLoader(false)
+          setBtnLoader(false),
+          setTrackPage(res.data.result)
         )
       );
   };
@@ -82,31 +75,6 @@ const Employees = () => {
     axiosInterceptor.get(`/get-employee?employee_id=${emp_id}`).then((res) => {
       setIndividualEmp(res.data.result);
     });
-  };
-
-  const saveNewEmp = (e) => {
-    e.preventDefault();
-    axiosInterceptor
-      .put(`/update-employee?employee_id=${tabelF}`, {
-        name: newName,
-        emp_id: newUserId,
-        email: newEmpId,
-        mobile: newMob,
-        password: newPass,
-        department: newTeam,
-        designation: newDesignation,
-      })
-      .then((res) => {
-        if (res.data.success) {
-          getIndEmp();
-          getAllEmployee(1);
-          toast.success(res.data.message);
-          console.log(res);
-        }
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message);
-      });
   };
 
   const deleteemp = () => {
@@ -145,10 +113,13 @@ const Employees = () => {
     });
 
   const searchEmp = () => {
+    // setSearch(designation.find((d) => d.designation === search)?._id);
     axiosInterceptor
       .get(`/get-all-employee?page=1&limit=10&search=${search}`)
       .then((res) => {
+        console.log(res);
         setEmpDetails(res.data.result.listOfEmployee);
+        setTrackPage(res.data.result);
       })
       .catch((error) => {
         console.log(error);
@@ -160,6 +131,10 @@ const Employees = () => {
     getAllEmployee(1);
     inputRef.current.value = "";
   };
+
+  const visibleHandel = () => {
+    setVisble(!visble);
+  };
   useEffect(() => {
     getAllEmployee(1);
     fetchAllDepartment();
@@ -170,86 +145,90 @@ const Employees = () => {
       <div className="tab_content">
         <p className="pt-1">Employees &#40;{totalEmp}&#41;</p>
         <div className="emp_input">
-          <svg
-            className="emp_slogo"
-            width="16"
-            height="17"
-            viewBox="0 0 16 17"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle
-              cx="7.82492"
-              cy="7.82495"
-              r="6.74142"
-              stroke="#646464"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M12.5137 12.8638L15.1567 15.5"
-              stroke="#646464"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-          <div className=" flex-row input_width">
-            <input
-              className="emp_input_box"
-              placeholder="Search by name, Designation, employee ID"
-              onChange={(e) => setSearch(e.target.value)}
-              ref={inputRef}
-            />
-            {search && (
-              <div className="clear_search" onClick={clearSearch}>
-                <ClearIcon sx={{ color: "#646464" }} />
+          <div className=" row ">
+            <div class="col-lg-9 col-md-8 col-sm-7 input_row">
+              <div class="d-flex align-items-center">
+                <svg
+                  class="emp_slogo mr-3"
+                  width="16"
+                  height="17"
+                  viewBox="0 0 16 17"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="7.82492"
+                    cy="7.82495"
+                    r="6.74142"
+                    stroke="#646464"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M12.5137 12.8638L15.1567 15.5"
+                    stroke="#646464"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <input
+                  class="emp_input_box flex-grow-1"
+                  placeholder="Search by name, Designation, employee ID"
+                  onChange={(e) => setSearch(e.target.value)}
+                  ref={inputRef}
+                />
+                {search && (
+                  <div class="clear_search ml-3" onClick={clearSearch}>
+                    <ClearIcon sx={{ color: "#646464" }} />
+                  </div>
+                )}
+                <button class="input_search ml-3" onClick={searchEmp}>
+                  Search
+                </button>
               </div>
-            )}
-            <button className="input_search" onClick={searchEmp}>
-              Search
-            </button>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-5 mt-3 mt-md-0 text-center">
+              <button className="download_btn">
+                Download Report
+                <svg
+                  style={{ marginLeft: 10, marginRight: 10 }}
+                  width="12"
+                  height="12"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M6.00002 8.38317C5.91113 8.38317 5.8278 8.36917 5.75002 8.34117C5.67224 8.31362 5.60002 8.2665 5.53335 8.19984L3.13335 5.79984C3.01113 5.67762 2.95002 5.52206 2.95002 5.33317C2.95002 5.14428 3.01113 4.98873 3.13335 4.8665C3.25558 4.74428 3.4138 4.68028 3.60802 4.6745C3.80269 4.66917 3.96113 4.72761 4.08335 4.84984L5.33335 6.09984V1.33317C5.33335 1.14428 5.39735 0.985837 5.52535 0.857837C5.65291 0.730282 5.81113 0.666504 6.00002 0.666504C6.18891 0.666504 6.34735 0.730282 6.47535 0.857837C6.60291 0.985837 6.66669 1.14428 6.66669 1.33317V6.09984L7.91669 4.84984C8.03891 4.72761 8.19735 4.66917 8.39202 4.6745C8.58624 4.68028 8.74446 4.74428 8.86669 4.8665C8.98891 4.98873 9.05002 5.14428 9.05002 5.33317C9.05002 5.52206 8.98891 5.67762 8.86669 5.79984L6.46669 8.19984C6.40002 8.2665 6.3278 8.31362 6.25002 8.34117C6.17224 8.36917 6.08891 8.38317 6.00002 8.38317ZM2.00002 11.3332C1.63335 11.3332 1.31958 11.2027 1.05869 10.9418C0.797354 10.6805 0.666687 10.3665 0.666687 9.99984V8.6665C0.666687 8.47762 0.730465 8.31917 0.85802 8.19117C0.98602 8.06361 1.14446 7.99984 1.33335 7.99984C1.52224 7.99984 1.68069 8.06361 1.80869 8.19117C1.93624 8.31917 2.00002 8.47762 2.00002 8.6665V9.99984H10V8.6665C10 8.47762 10.064 8.31917 10.192 8.19117C10.3196 8.06361 10.4778 7.99984 10.6667 7.99984C10.8556 7.99984 11.0138 8.06361 11.1414 8.19117C11.2694 8.31917 11.3334 8.47762 11.3334 8.6665V9.99984C11.3334 10.3665 11.2029 10.6805 10.942 10.9418C10.6807 11.2027 10.3667 11.3332 10 11.3332H2.00002Z"
+                    fill="#0A0A0A"
+                  />
+                </svg>
+              </button>
+              <button
+                type="button"
+                className="add_emp_btn "
+                data-bs-toggle="modal"
+                data-bs-target="#addemp_pop_up"
+              >
+                <svg
+                  style={{ marginRight: 10, marginLeft: 10 }}
+                  width="10"
+                  height="10"
+                  viewBox="0 0 10 10"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M4.15152 10V0H5.84848V10H4.15152ZM0 5.84848V4.15152H10V5.84848H0Z"
+                    fill="black"
+                  />
+                </svg>
+                Add User
+              </button>
+            </div>
           </div>
-
-          <button className="download_btn">
-            Download Report
-            <svg
-              style={{ marginLeft: 10, marginRight: 10 }}
-              width="12"
-              height="12"
-              viewBox="0 0 12 12"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M6.00002 8.38317C5.91113 8.38317 5.8278 8.36917 5.75002 8.34117C5.67224 8.31362 5.60002 8.2665 5.53335 8.19984L3.13335 5.79984C3.01113 5.67762 2.95002 5.52206 2.95002 5.33317C2.95002 5.14428 3.01113 4.98873 3.13335 4.8665C3.25558 4.74428 3.4138 4.68028 3.60802 4.6745C3.80269 4.66917 3.96113 4.72761 4.08335 4.84984L5.33335 6.09984V1.33317C5.33335 1.14428 5.39735 0.985837 5.52535 0.857837C5.65291 0.730282 5.81113 0.666504 6.00002 0.666504C6.18891 0.666504 6.34735 0.730282 6.47535 0.857837C6.60291 0.985837 6.66669 1.14428 6.66669 1.33317V6.09984L7.91669 4.84984C8.03891 4.72761 8.19735 4.66917 8.39202 4.6745C8.58624 4.68028 8.74446 4.74428 8.86669 4.8665C8.98891 4.98873 9.05002 5.14428 9.05002 5.33317C9.05002 5.52206 8.98891 5.67762 8.86669 5.79984L6.46669 8.19984C6.40002 8.2665 6.3278 8.31362 6.25002 8.34117C6.17224 8.36917 6.08891 8.38317 6.00002 8.38317ZM2.00002 11.3332C1.63335 11.3332 1.31958 11.2027 1.05869 10.9418C0.797354 10.6805 0.666687 10.3665 0.666687 9.99984V8.6665C0.666687 8.47762 0.730465 8.31917 0.85802 8.19117C0.98602 8.06361 1.14446 7.99984 1.33335 7.99984C1.52224 7.99984 1.68069 8.06361 1.80869 8.19117C1.93624 8.31917 2.00002 8.47762 2.00002 8.6665V9.99984H10V8.6665C10 8.47762 10.064 8.31917 10.192 8.19117C10.3196 8.06361 10.4778 7.99984 10.6667 7.99984C10.8556 7.99984 11.0138 8.06361 11.1414 8.19117C11.2694 8.31917 11.3334 8.47762 11.3334 8.6665V9.99984C11.3334 10.3665 11.2029 10.6805 10.942 10.9418C10.6807 11.2027 10.3667 11.3332 10 11.3332H2.00002Z"
-                fill="#0A0A0A"
-              />
-            </svg>
-          </button>
-
-          <button
-            type="button"
-            className="add_emp_btn "
-            data-bs-toggle="modal"
-            data-bs-target="#addemp_pop_up"
-          >
-            <svg
-              style={{ marginRight: 10, marginLeft: 10 }}
-              width="10"
-              height="10"
-              viewBox="0 0 10 10"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M4.15152 10V0H5.84848V10H4.15152ZM0 5.84848V4.15152H10V5.84848H0Z"
-                fill="black"
-              />
-            </svg>
-            Add Employee
-          </button>
           {/* add emp pop up  */}
           <div
             className={`modal fade addemp_pop_up }`}
@@ -362,14 +341,26 @@ const Employees = () => {
                           </label>
                           <input
                             className="add_emp_input"
-                            type="password"
+                            type={visble ? "text" : "password"}
                             id="password"
                             value={values.password}
                             placeholder="Password"
                             onChange={handleChange}
                             onBlur={handleBlur}
                           />
-
+                          <div onClick={visibleHandel}>
+                            {visble ? (
+                              <VisibilityIcon
+                                className="visibilityIcon"
+                                sx={{ fontSize: 20, color: "#646464" }}
+                              />
+                            ) : (
+                              <VisibilityOffIcon
+                                className="visibilityIcon"
+                                sx={{ fontSize: 20, color: "#646464" }}
+                              />
+                            )}
+                          </div>
                           {errors.password && touched.password && (
                             <p className="mt-2 error_mess_addemp">
                               {errors.password}
@@ -431,45 +422,61 @@ const Employees = () => {
               </div>
             </div>
           </div>
-
-          {/* add emp pop up  */}
+          {/* add emp pop up ends */}
         </div>
         {btnLoader === false ? (
-          <table className="table tablebordered">
-            <thead>
-              <tr>
-                <th style={{ paddingLeft: "35px" }}>Sl No</th>
-                <th>Employee Name</th>
-                <th>Employee ID</th>
-                <th>Team</th>
-                <th style={{ width: "15%" }}>Designation</th>
-              </tr>
-            </thead>
-            <tbody>
-              {empDetails.map((each_emp, index) => {
-                return (
-                  <tr
-                    key={each_emp.id}
-                    data-bs-toggle="modal"
-                    data-bs-target="#display_emp_details"
-                    onClick={() => getIndEmp(each_emp._id)}
-                  >
-                    <td style={{ paddingLeft: "35px" }}>{index + 1}</td>
-                    <td>{each_emp.name === "" ? "-" : each_emp.name}</td>
-                    <td className="emp_id">
-                      {each_emp.emp_id === "" ? "-" : each_emp.emp_id}
-                    </td>
-                    <td>
-                      {each_emp.department === "" ? "-" : each_emp.department}
-                    </td>
-                    <td>
-                      {each_emp.designation === "" ? "-" : each_emp.designation}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div
+            className="table_cover table-responsive"
+            style={{ overflowX: "auto" }}
+          >
+            <table className="table tablebordered">
+              <thead>
+                <tr>
+                  <th style={{ paddingLeft: "35px" }}>Sl No</th>
+                  <th>Employee Name</th>
+                  <th>Employee ID</th>
+                  <th>Team</th>
+                  <th style={{ width: "15%" }}>Designation</th>
+                </tr>
+              </thead>
+              <tbody>
+                {empDetails.length <= 0 ? (
+                  <div>
+                    <NoData />
+                  </div>
+                ) : (
+                  empDetails.map((each_emp, index) => {
+                    return (
+                      <tr
+                        key={each_emp.id}
+                        data-bs-toggle="modal"
+                        data-bs-target="#display_emp_details"
+                        onClick={() => getIndEmp(each_emp._id)}
+                      >
+                        <td style={{ paddingLeft: "35px" }}>
+                          {(trackPage.currentPage - 1) * 10 + index + 1}
+                        </td>
+                        <td>{each_emp.name === "" ? "-" : each_emp.name}</td>
+                        <td className="emp_id">
+                          {each_emp.emp_id === "" ? "-" : each_emp.emp_id}
+                        </td>
+                        <td>
+                          {each_emp.department === ""
+                            ? "-"
+                            : each_emp.department}
+                        </td>
+                        <td>
+                          {each_emp.designation === ""
+                            ? "-"
+                            : each_emp.designation}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <div
             className="d-flex justify-content-center align-items-center"
@@ -477,7 +484,9 @@ const Employees = () => {
               height: "50vh",
             }}
           >
-            <Loading />
+            <Box sx={{ display: "flex" }}>
+              <CircularProgress />
+            </Box>
           </div>
         )}
         {/* emp display details in ui pop up  */}
@@ -609,94 +618,180 @@ const Employees = () => {
                   <ClearIcon />
                 </button>
               </div>
-              <div className="modal-body">
-                <div className="edit_inputs">
-                  <div className="edit_inputs_left">
-                    <label htmlFor="Full_name" className="p_light">
-                      Employee Name
-                    </label>
-                    <input
-                      className="input_feild"
-                      defaultValue={individualEmp?.name}
-                      type="text"
-                      id="full_name"
-                      placeholder="Enter Full Name"
-                      onChange={(e) => setNewName(e.target.value)}
-                    />
-                    <label className="p_light">User ID</label>
-                    <input
-                      className="input_feild"
-                      defaultValue={individualEmp?.emp_id}
-                      type="email"
-                      placeholder="eg. user@cendrol.com"
-                      onChange={(e) => setNewUserId(e.target.value)}
-                    />
-                    <label className="p_light">Mobile Number</label>
-                    <div className="d-flex">
-                      <div className="numer_91">+91</div>
-                      <input
-                        className="input_feild_number"
-                        defaultValue={individualEmp?.mobile}
-                        type="number"
-                        placeholder="eg.8256XXXX64"
-                        onChange={(e) => setNewMob(e.target.value)}
-                      />
+              <Formik
+                const
+                enableReinitialize={true}
+                initialValues={{
+                  newName: individualEmp?.name,
+                  newEmpId: individualEmp?.emp_id,
+                  newUserId: individualEmp?.email,
+                  newPass: individualEmp?.password,
+                  newMob: individualEmp?.mobile,
+                  newTeam: departmentId,
+                  newDesignation: designationId,
+                }}
+                validationSchema={editEmpSchema}
+                onSubmit={(values) => {
+                  axiosInterceptor
+                    .put(`/update-employee?employee_id=${tabelF}`, {
+                      name: values.newName,
+                      emp_id: values.newEmpId,
+                      email: values.newUserId,
+                      mobile: values.newMob,
+                      password: values.newPass,
+                      department: values.newTeam,
+                      designation: values.newDesignation,
+                    })
+                    .then((res) => {
+                      if (res.data.success) {
+                        getIndEmp();
+                        getAllEmployee(1);
+                        toast.success(res.data.message);
+                        console.log(res);
+                      }
+                    })
+                    .catch((error) => {
+                      toast.error(error.response.data.message);
+                    });
+                }}
+              >
+                <Form>
+                  <div className="modal-body">
+                    <div className="edit_inputs">
+                      <div className="edit_inputs_left">
+                        <label htmlFor="newName" className="p_light">
+                          Employee Name
+                        </label>
+                        <Field
+                          className="input_feild"
+                          name="newName"
+                          placeholder="Enter Full Name"
+                        />
+                        <p className="error_mess_addemp mb-3">
+                          <ErrorMessage
+                            style={{ color: "red" }}
+                            name="newName"
+                          />
+                        </p>
+                        <label htmlFor="newUserId" className="p_light">
+                          User ID
+                        </label>
+                        <Field
+                          className="input_feild"
+                          type="email"
+                          name="newUserId"
+                          placeholder="eg. user@cendrol.com"
+                        />
+                        <p className="error_mess_addemp mb-3">
+                          <ErrorMessage
+                            style={{ color: "red" }}
+                            name="newUserId"
+                          />
+                        </p>
+                        <label htmlFor="newMob" className="p_light">
+                          Mobile Number
+                        </label>
+                        <div className="d-flex">
+                          <div className="numer_91">+91</div>
+                          <Field
+                            className="input_feild_number"
+                            type="number"
+                            name="newMob"
+                            placeholder="eg.8256XXXX64"
+                            onKeyDown={(event) => {
+                              const value = event.target.value;
+                              if (value.length >= 10 && event.keyCode !== 8) {
+                                event.preventDefault();
+                              }
+                            }}
+                          />
+                        </div>
+                        <p className="error_mess_addemp mb-3">
+                          <ErrorMessage
+                            style={{ color: "red" }}
+                            name="newMob"
+                          />
+                        </p>
+                      </div>
+                      <div className="edit_inputs_right">
+                        <label htmlFor="newEmpId" className="p_light">
+                          Employee ID
+                        </label>
+                        <Field
+                          className="input_feild"
+                          type="text"
+                          name="newEmpId"
+                          placeholder="CEN070"
+                        />
+                        <p className="error_mess_addemp mb-3">
+                          <ErrorMessage
+                            style={{ color: "red" }}
+                            name="newEmpId"
+                          />
+                        </p>
+                        <label htmlFor="newPass" className="p_light">
+                          Password
+                        </label>
+                        <Field
+                          className="input_feild"
+                          type="text"
+                          placeholder="eg. XXXXXX"
+                          name="newPass"
+                        />
+                        <p className="error_mess_addemp mb-3">
+                          <ErrorMessage
+                            style={{ color: "red" }}
+                            name="newPass"
+                          />
+                        </p>
+                        <label htmlFor="newTeam" className="p_light">
+                          Team
+                        </label>
+                        <Field name="newTeam" as="select">
+                          {department?.map((data) => {
+                            return (
+                              <option key={data._id} value={data._id}>
+                                {data.department}
+                              </option>
+                            );
+                          })}
+                        </Field>
+                        <p className="error_mess_addemp mb-3">
+                          <ErrorMessage
+                            style={{ color: "red" }}
+                            name="newTeam"
+                          />
+                        </p>
+                      </div>
                     </div>
                   </div>
-                  <div className="edit_inputs_right">
-                    <label htmlFor="Full_name" className="p_light">
-                      Employee ID
-                    </label>
-                    <input
-                      className="input_feild"
-                      defaultValue={individualEmp?.email}
-                      type="text"
-                      id="full_name"
-                      placeholder="CEN070"
-                      onChange={(e) => setNewEmpId(e.target.value)}
-                    />
-                    <label className="p_light">Password</label>
-                    <input
-                      className="input_feild"
-                      defaultValue={individualEmp?.password}
-                      type="text"
-                      placeholder="eg. XXXXXX"
-                      onChange={(e) => setNewPass(e.target.value)}
-                    />
-                    <label className="p_light">Team</label>
-                    <select
-                      defaultValue={individualEmp?.department}
-                      onChange={(e) => setNewTeam(e.target.value)}
+                  <div className="modal-footer">
+                    <p className="p_light2">Designation</p>
+                    <Field
+                      as="select"
+                      name="newDesignation"
+                      className="choose_designation"
                     >
-                      {department?.map((data) => {
+                      {designation?.map((data) => {
                         return (
-                          <option value={data._id}>{data.department}</option>
+                          <option key={data._id} value={data._id}>
+                            {data.designation}
+                          </option>
                         );
                       })}
-                    </select>
+                    </Field>
+                    <p className="error_mess_addemp mb-3">
+                      <ErrorMessage
+                        style={{ color: "red" }}
+                        name="newDesignation"
+                      />
+                    </p>
+                    <button type="submit" className="editemp_save_btn mt-3">
+                      Save Details
+                    </button>
                   </div>
-                </div>
-              </div>
-              <div className="modal-footer">
-                <p className="p_light2">Designation</p>
-                <select
-                  className="choose_designation"
-                  defaultValue={individualEmp?.designation}
-                  onChange={(e) => setNewDesignation(e.target.value)}
-                >
-                  {designation?.map((data) => {
-                    return <option value={data._id}>{data.designation}</option>;
-                  })}
-                </select>
-                <button
-                  onClick={saveNewEmp}
-                  data-bs-dismiss="modal"
-                  type="button"
-                  className="editemp_save_btn mt-3"
-                >
-                  Save Details
-                </button>
-              </div>
+                </Form>
+              </Formik>
             </div>
           </div>
         </div>
@@ -771,7 +866,9 @@ const Employees = () => {
             getAllEmployee(page);
             setBtnLoader(true);
           }}
-          total={30}
+          total={10 * trackPage.numberOfPage}
+          current={trackPage.currentPage}
+          pageSize={10}
           showTotal={(total, range) => (
             <p>{`Showing ${range[0]} to ${range[1]} of ${total} Results`}</p>
           )}
