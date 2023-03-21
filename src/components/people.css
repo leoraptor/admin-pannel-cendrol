@@ -194,6 +194,7 @@
   flex-direction: column;
 }
 .side_bar ul {
+  margin-top: 90px;
   padding: 10px;
 }
 .side_bar ul li {
@@ -268,7 +269,8 @@
   padding: 5px 15px;
 }
 .side_logo {
-  padding: 30px 41px 100px 24px;
+  cursor: pointer;
+  padding: 30px 41px 10px 24px;
 }
 #exTab2 h3 {
   color: white;
@@ -285,9 +287,16 @@
 /* change border radius for the tab , apply corners on top*/
 
 .tab_container {
-  margin: 12px;
-  padding: 12px;
+  margin: 24px;
+  padding: 18px;
   background: #ffffff;
+}
+.form-control:focus {
+  color: #212529;
+  background-color: var(--grey_bg);
+  border-color: none;
+  outline: 0;
+  box-shadow: none;
 }
 #tab-section .nav-link {
   border: 0 !important;
@@ -334,21 +343,38 @@
 .table_container {
   border: 1px solid var(--border_clr);
 }
-
+.custom-table {
+  overflow-x: auto;
+  display: block;
+  height: 64vh;
+  white-space: nowrap;
+}
+.custom-table tbody {
+  width: 100%;
+  display: table;
+}
+.custom-table thead {
+  vertical-align: bottom;
+  /* display: table; */
+  width: 100%;
+  position: sticky;
+  top: 0;
+  background: #ddd;
+}
 .emp_slogo {
-  position: absolute;
+  position: relative;
   z-index: 5;
   top: 35%;
   left: 1%;
 }
 .emp_dlogo {
-  position: absolute;
+  position: relative;
   z-index: 5;
   top: 21.5%;
   left: 3%;
 }
 .emp_tlogo {
-  position: absolute;
+  position: relative;
   z-index: 5;
   top: 32.5%;
   left: 3%;
@@ -996,7 +1022,6 @@ input::-webkit-inner-spin-button {
 }
 .emp_input_box {
   height: 38px;
-  width: 90%;
   padding-left: 38px;
   background: var(--grey_bg);
   border-radius: 1px;
@@ -1011,7 +1036,7 @@ input::-webkit-inner-spin-button {
 
 .emp_input_box_designation {
   height: 38px;
-  width: 72%;
+  width: 69%;
   padding-left: 38px;
   background: var(--grey_bg);
   border-radius: 1px;
@@ -1028,6 +1053,7 @@ input::-webkit-inner-spin-button {
   top: 6px;
   left: 89%;
   cursor: pointer;
+  z-index: 11111;
 }
 .nodata {
   height: 60vh;
@@ -1061,8 +1087,9 @@ input::-webkit-inner-spin-button {
 }
 .emp_input .emp_slogo {
   position: absolute;
-  top: 26%;
-  left: 24px;
+  top: 28%;
+  left: 14px;
+  z-index: 1111;
 }
 .input_row {
   position: relative;
@@ -1201,8 +1228,6 @@ table tbody tr:hover {
   font-style: normal;
   font-weight: 500;
   font-size: 12px;
-  width: 8%;
-  padding-top: 2px;
 }
 #map {
   position: absolute;
@@ -1215,6 +1240,10 @@ table tbody tr:hover {
 }
 .zoom {
   margin-top: 12px !important;
+}
+.floor-plan {
+  height: 100%;
+  width: 100%;
 }
 @media screen and (max-width: 1024px) {
   /* .emp_input_box_designation {

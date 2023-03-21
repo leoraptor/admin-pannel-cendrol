@@ -61,9 +61,9 @@ const Login = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
-              {errors.email && touched.email ? (
+              {errors.email && touched.email && (
                 <p className="mt-2 error_mess ">{errors.email}</p>
-              ) : null}
+              )}
             </div>
             <div className="input_details">
               <label htmlFor="password" className="login_label">
@@ -77,12 +77,12 @@ const Login = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
-              {errors.password && touched.password ? (
+              {errors.password && touched.password && (
                 <p className="mt-2 error_mess">{errors.password}</p>
-              ) : null}
+              )}
             </div>
             <button type="submit" className="login_btn">
-              {btnLoader === true ? <Loading /> : ""}
+              {btnLoader && <Loading />}
               <p className="mb-0 mx-4">Login now</p>
             </button>
           </div>

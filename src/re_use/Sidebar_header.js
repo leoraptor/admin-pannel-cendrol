@@ -5,25 +5,16 @@ import logout_logo from "../assets/svgs/svg_3.svg";
 const Sidebar_header = () => {
   const navigate = useNavigate();
   const [logdata, setLogdata] = useState(false);
-  const handleShow = () => {
-    setLogdata(!logdata);
-  };
 
-  const logout = () => {
-    localStorage.clear();
-    navigate("/");
-  };
   return (
     <div className="position-relative">
       <img
         src={logout_logo}
-        onClick={handleShow}
-        classNameName="logout_logo"
+        className="logout_logo"
         style={{ cursor: "pointer" }}
         data-bs-toggle="modal"
         data-bs-target="#logout"
         data-bs-dismiss="modal"
-        tabindex="-1"
         aria-labelledby="btn_logout"
         aria-hidden="true"
       />
@@ -56,7 +47,6 @@ const Sidebar_header = () => {
         id="logout"
         data-bs-backdrop="static"
         data-bs-keyboard="true"
-        tabindex="-1"
         aria-labelledby="exampleModalLabel"
         aria-hidden="true"
       >
@@ -78,8 +68,8 @@ const Sidebar_header = () => {
                 <path
                   d="M38.2478 16.583V4C38.2478 2.89543 37.3524 2 36.2478 2H3.67065C2.56608 2 1.67065 2.89543 1.67065 4V43.2886C1.67065 44.3932 2.56609 45.2886 3.67066 45.2886H36.2478C37.3524 45.2886 38.2478 44.3932 38.2478 43.2886V30.9358"
                   stroke="#ED5454"
-                  stroke-width="3"
-                  stroke-linecap="round"
+                  strokeWidth="3"
+                  strokeLinecap="round"
                 />
                 <path
                   d="M24.9302 6.12775L13.1345 2.23904C12.6554 2.08111 12.1508 2.01521 11.6472 2.04483L4.76511 2.44966C2.65086 2.57403 1 4.32486 1 6.44277V42.7641C1 44.633 2.29402 46.2527 4.1167 46.6654L22.7945 50.8943C25.2968 51.4609 27.6778 49.5586 27.6778 46.9931V9.92664C27.6778 8.20005 26.57 6.66833 24.9302 6.12775Z"
@@ -88,16 +78,16 @@ const Sidebar_header = () => {
                 <path
                   d="M53.6075 24.1416L35.5706 24.1416"
                   stroke="#ED5454"
-                  stroke-width="3"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
                 <path
                   d="M46.3328 31.3858L53.6077 24.1422L46.3328 16.8973"
                   stroke="#ED5454"
-                  stroke-width="3"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
             </div>
@@ -112,7 +102,7 @@ const Sidebar_header = () => {
               }}
             >
               <button
-                onClick={logout}
+                onClick={() => (localStorage.clear(), navigate("/"))}
                 data-bs-dismiss="modal"
                 className="e_del"
                 type="button"
@@ -123,7 +113,7 @@ const Sidebar_header = () => {
                 data-bs-dismiss="modal"
                 className="e_back"
                 type="button"
-                onClick={handleShow}
+                onClick={() => setLogdata(false)}
               >
                 Go Back
               </button>

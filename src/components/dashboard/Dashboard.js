@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import Sidebar from "../../re_use/side_bar/Sidebar";
 import "../people.css";
 import Sidebar_header from "../../re_use/Sidebar_header";

@@ -1,7 +1,9 @@
 import React from "react";
 import Sidebar_header from "../../re_use/Sidebar_header";
 import Sidebar from "../../re_use/side_bar/Sidebar";
+import MapLayers from "../MapLayers";
 import "../people.css";
+
 const Floorplan = () => {
   return (
     <div className="d-flex ">
@@ -11,7 +13,10 @@ const Floorplan = () => {
           Floor plan
           <Sidebar_header />
         </div>
-        <div></div>
+        <div className="tab_container">
+          <MapLayers />
+          {/* <iframe className="floor-plan" src="" title="Floor Plan"></iframe> */}
+        </div>
       </div>
     </div>
   );
